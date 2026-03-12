@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "SparkTest platform and admin panel",
   "scripts": {
-    "dev:platform": "npx serve test-platform",
     "dev:admin": "npx serve admin-panel",
+    "dev:platform": "npm --prefix test-platform-react run dev",
     "dev": "echo 'Run \"npm run dev:platform\" or \"npm run dev:admin\"' && exit 1"
   },
   "keywords": [],
