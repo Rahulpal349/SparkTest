@@ -7,7 +7,7 @@ new Chart(ctx, {
         labels: ['May 01', 'May 05', 'May 10', 'May 15', 'May 20', 'May 25', 'May 30'],
         datasets: [{
             label: 'Student Registrations',
-            data: [12, 19, 25, 21, 15, 12, 18],
+            data: [0, 0, 0, 0, 0, 0, 0],
             backgroundColor: (context) => {
                 const index = context.dataIndex;
                 // Highlight middle bar as per the reference image

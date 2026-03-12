@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subject Test (Technical) - SparkTest</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="mock-tests-page">
+    <!-- User Header (Same as mock-tests.html) -->
+    <header class="user-header" style="position: relative; border-bottom: 1px solid #E5E7EB;">
+        <a href="index.html" style="text-decoration: none;">
+            <div class="logo">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-svg">
+                    <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="#22C55E" stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="logo-text" style="font-size: 1.25rem;"><span class="text-black">Spark</span><span class="text-primary">Test</span></span>
+            </div>
+        </a>
+
+        <div class="search-container" style="max-width: 1120px; margin-left: 2rem;">
+            <div class="search-wrapper">
+                <input type="text" placeholder="Search tests...">
+                <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </div>
+        </div>
+
+        <div class="user-profile-info">
+            <div class="date-info" style="margin-right: 1rem;">
+                <span class="date">March 12, 2026</span>
+                <span class="user-name">Alex Johnson</span>
+            </div>
+            <img src="https://ui-avatars.com/api/?name=Alex+Johnson&background=E8F5E9&color=22C55E" alt="Profile" class="profile-avatar">
+        </div>
+    </header>
+
+    <!-- Tab Navigation -->
+    <div class="test-tabs-container">
+        <div class="test-tabs">
+            <button class="tab-btn active">Subject Test (Technical)<span class="tab-count">(17)</span></button>
+            <button class="tab-btn">Sectional Test<span class="tab-count">(35)</span></button>
+            <button class="tab-btn">Full Test<span class="tab-count">(6)</span></button>
+        </div>
+    </div>
+
+    <!-- Test List Container -->
+    <div class="test-list-container">
+        
+        <!-- Attempted Test Card -->
+        <div class="test-row-card attempted">
+            <div class="card-main">
+                <span class="status-badge free">FREE</span>
+                <div class="card-content-side">
+                    <h3 class="test-title">SAIL MT EE Network Theory Mock Test</h3>
+                    <div class="test-meta">
+                        <div class="meta-item">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                            <span>566/1231 Rank</span>
+                        </div>
+                        <div class="meta-item">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                            <span>10.5/40 Marks</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-action-side">
+                    <button class="btn btn-outline">Solution</button>
+                    <button class="btn btn-outline">Analysis</button>
+                </div>
+            </div>
+            <div class="card-strip">
+                <div class="strip-links">
+                    <a href="#" class="strip-link">Syllabus</a>
+                    <span class="strip-info">Attempted on Feb 22</span>
+                </div>
+                <a href="#" class="reattempt-link">Reattempt &nbsp;<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></a>
+            </div>
+        </div>
+
+        <!-- Unattempted Test Card 1 -->
+        <div class="test-row-card">
+            <div class="card-main">
+                <div class="card-content-side" style="padding-top: 0;">
+                    <h3 class="test-title">ST 1: Network Theory-I</h3>
+                    <div class="test-meta">
+                        <div class="meta-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                            <span>20 Questions</span>
+                        </div>
+                        <div class="meta-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                            <span>40 Marks</span>
+                        </div>
+                        <div class="meta-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>16 Mins</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-action-side">
+                    <a href="instructions.html" class="btn btn-primary" style="padding: 0.75rem 2.5rem; text-decoration: none;">Start Now</a>
+                </div>
+            </div>
+            <div class="card-strip">
+                <div class="strip-links">
+                    <a href="#" class="strip-link">Syllabus</a>
+                    <div style="display: flex; gap: 0.5rem; align-items: center; background: #f0f0f0; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; color: #4B5563;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20"></path><path d="M7 12V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v7"></path><path d="M12 22V12"></path></svg>
+                        English, Hindi
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Unattempted Test Card 2 -->
+        <div class="test-row-card">
+            <div class="card-main">
+                <div class="card-content-side" style="padding-top: 0;">
+                    <h3 class="test-title">ST 2: Control Systems - I</h3>
+                    <div class="test-meta">
+                        <div class="meta-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                            <span>20 Questions</span>
+                        </div>
+                        <div class="meta-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                            <span>40 Marks</span>
+                        </div>
+                        <div class="meta-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>16 Mins</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-action-side">
+                    <button class="btn btn-primary" style="padding: 0.75rem 2.5rem;">Start Now</button>
+                </div>
+            </div>
+            <div class="card-strip">
+                <div class="strip-links">
+                    <a href="#" class="strip-link">Syllabus</a>
+                    <div style="display: flex; gap: 0.5rem; align-items: center; background: #f0f0f0; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; color: #4B5563;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20"></path><path d="M7 12V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v7"></path><path d="M12 22V12"></path></svg>
+                        English, Hindi
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer (Same as mock-tests.html) -->
+    <footer class="footer">
+        <div class="container footer-bottom" style="border: none; padding-top: 0;">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="#9CA3AF" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span style="color: #9CA3AF; font-weight: 700;">SparkTest</span>
+            </div>
+            <p style="font-size: 0.85rem; color: #9CA3AF;">© 2026 SparkTest. All rights reserved.</p>
+            <div class="legal-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Help Center</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        gsap.from(".test-row-card", {
+            opacity: 0,
+            x: -20,
+            duration: 0.6,
+            stagger: 0.1,
+            ease: "power2.out"
+        });
+    </script>
+</body>
+</html>
