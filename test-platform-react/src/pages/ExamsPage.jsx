@@ -5,7 +5,7 @@ import Footer from '../components/Footer';
 
 export default function ExamsPage() {
   useEffect(() => {
-    document.title = 'Exams - SparkTest';
+    document.title = 'Test Series - SparkTest';
   }, []);
 
   return (

@@ -19,7 +19,7 @@ export default function UserHeader() {
     <header className="user-header">
       <Logo size={28} />
       <nav className="user-nav">
-        <Link to="/exams" className="active">Exams</Link>
+        <Link to="/exams" className="active">Test Series</Link>
         <Link to="#">My Tests</Link>
         <Link to="#">Performance</Link>
       </nav>

@@ -4000,3 +4000,59 @@ h3 {
     .test-grid { grid-template-columns: 1fr; padding: 1.5rem; }
     .user-nav { gap: 1rem; }
 }
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.15s, box-shadow 0.15s, background 0.2s;
+    line-height: 1.4;
+}
+
+.btn-primary {
+    background: #22C55E;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.25);
+}
+
+.btn-primary:hover {
+    background: #16A34A;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35);
+}
+
+.btn-secondary {
+    background: #F3F4F6;
+    color: #374151;
+}
+
+.btn-secondary:hover {
+    background: #E5E7EB;
+}
+
+.btn-large {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+}
+
+.login-link {
+    font-weight: 500;
+    color: #374151;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.login-link:hover {
+    color: #22C55E;
+}
