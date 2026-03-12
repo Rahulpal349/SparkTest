@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import gsap from 'gsap';
+
 import Logo from '../components/Logo';
 import { supabase } from '../lib/supabase';
 
@@ -20,14 +20,6 @@ export default function LoginPage() {
     if (location.state?.message) {
       setMessage(location.state.message);
     }
-
-    gsap.from(".auth-card > *", {
-      opacity: 0,
-      y: 20,
-      duration: 0.8,
-      stagger: 0.1,
-      ease: "power2.out"
-    });
   }, [location]);
 
   const handleSubmit = async (e) => {

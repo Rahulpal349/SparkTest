@@ -1,18 +1,11 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import gsap from 'gsap';
+
 import Logo from '../components/Logo';
 
 export default function ForgotPasswordPage() {
   useEffect(() => {
     document.title = 'Forgot Password? - SparkTest';
-    gsap.from(".auth-card > *", {
-      opacity: 0,
-      y: 20,
-      duration: 0.8,
-      stagger: 0.1,
-      ease: "power2.out"
-    });
   }, []);
 
   const handleSubmit = (e) => {
@@ -66,7 +59,7 @@ export default function ForgotPasswordPage() {
                 </div>
               </div>
 
-              <button type="submit" className="btn btn-primary btn-auth" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.75rem }}>
+              <button type="submit" className="btn btn-primary btn-auth" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}>
                 Send Reset Link
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12,5 19,12 12,5"></polyline></svg>
               </button>

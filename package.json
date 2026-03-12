@@ -3,9 +3,15 @@
   "version": "1.0.0",
   "description": "SparkTest platform and admin panel",
   "scripts": {
-    "dev:admin": "npx serve admin-panel",
+    "dev:admin": "npm --prefix admin-panel-react run dev",
     "dev:platform": "npm --prefix test-platform-react run dev",
-    "dev": "echo 'Run \"npm run dev:platform\" or \"npm run dev:admin\"' && exit 1"
+    "dev": "echo 'To start development, run \"npm run dev:platform\" or \"npm run dev:admin\"' && exit 0",
+    "build:platform": "npm --prefix test-platform-react run build",
+    "build:admin": "npm --prefix admin-panel-react run build",
+    "build:all": "npm run build:platform && npm run build:admin",
+    "deploy:platform": "npm run build:platform && cd test-platform-react && npx wrangler deploy",
+    "deploy:admin": "npm run build:admin && cd admin-panel-react && npx wrangler deploy",
+    "deploy:all": "npm run deploy:platform && npm run deploy:admin"
   },
   "keywords": [],
   "author": "",

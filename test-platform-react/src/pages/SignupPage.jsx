@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import gsap from 'gsap';
+
 import Logo from '../components/Logo';
 import { supabase } from '../lib/supabase';
 
@@ -14,13 +14,6 @@ export default function SignupPage() {
 
   useEffect(() => {
     document.title = 'Create an Account - SparkTest';
-    gsap.from(".auth-card > *", {
-      opacity: 0,
-      y: 20,
-      duration: 0.8,
-      stagger: 0.1,
-      ease: "power2.out"
-    });
   }, []);
 
   const handleSubmit = async (e) => {

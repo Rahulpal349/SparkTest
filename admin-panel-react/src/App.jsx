@@ -6,7 +6,6 @@ import Tests from './pages/Tests';
 import Questions from './pages/Questions';
 import Redesigner from './pages/Redesigner';
 import Analytics from './pages/Analytics';
-import './App.css';
 
 function App() {
   return (
