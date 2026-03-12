@@ -1,0 +1,13 @@
+{
+  "name": "sparktest-monorepo",
+  "version": "1.0.0",
+  "description": "SparkTest platform and admin panel",
+  "scripts": {
+    "dev:platform": "npx serve test-platform",
+    "dev:admin": "npx serve admin-panel",
+    "dev": "echo 'Run \"npm run dev:platform\" or \"npm run dev:admin\"' && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
