@@ -10,22 +10,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <!-- Header -->
     <header class="glass fixed-top">
         <nav class="container nav-bar">
-            <div class="logo">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-svg">
-                    <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="#22C55E" stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <span class="logo-text"><span class="text-black">Spark</span><span class="text-primary">Test</span></span>
-            </div>
+            <a href="index.html" class="logo-link-wrapper">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-svg">
+                        <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="#22C55E" stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="logo-text"><span class="text-black">Spark</span><span class="text-primary">Test</span></span>
+                </div>
+            </a>
             <ul class="nav-links">
-                <li><a href="exams.html" class="active-link">Exams</a></li>
-                <li><a href="#">Mock Tests</a></li>
-                <li><a href="#">Courses</a></li>
-                <li><a href="#">Practice</a></li>
+                <li><a href="exams.html" class="active-link">Test Series</a></li>
+                <li><a href="#">Live Test</a></li>
+                <li><a href="#">About</a></li>
             </ul>
             <div class="nav-actions">
                 <a href="#" class="btn btn-primary">Login</a>
@@ -189,12 +191,14 @@
     <footer class="footer-section section-padding">
         <div class="container footer-grid">
             <div class="footer-brand">
-                <div class="logo">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-svg grayscale">
-                        <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="#22C55E" stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    <span class="logo-text"><span class="text-black">Spark</span><span class="text-primary">Test</span></span>
-                </div>
+                <a href="index.html" class="logo-link-wrapper">
+                    <div class="logo">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-svg grayscale">
+                            <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="#22C55E" stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="logo-text"><span class="text-black">Spark</span><span class="text-primary">Test</span></span>
+                    </div>
+                </a>
                 <p class="footer-desc">The #1 platform for electrical engineering students to crack government job exams with confidence.</p>
                 <div class="social-links">
                     <a href="#" class="social-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg></a>
@@ -205,9 +209,8 @@
                 <h4>QUICK LINKS</h4>
                 <ul>
                     <li><a href="index.html">Home</a></li>
-                    <li><a href="exams.html">Exams</a></li>
-                    <li><a href="#">Mock Tests</a></li>
-                    <li><a href="#">Study Material</a></li>
+                    <li><a href="exams.html">Test Series</a></li>
+                    <li><a href="#">About</a></li>
                 </ul>
             </div>
             <div class="footer-links">
@@ -231,6 +234,7 @@
         </div>
     </footer>
 
+    <script src="js/supabase-client.js"></script>
     <script src="script.js"></script>
     <script>
         // Use a loop to handle multiple sections independently
