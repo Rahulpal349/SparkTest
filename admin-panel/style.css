@@ -689,3 +689,366 @@ body {
     font-size: 0.75rem;
     color: var(--text-muted);
 }
+
+/* ============================================
+   QUESTION REDESIGNER STYLES
+   ============================================ */
+.qr-ai-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--primary-light);
+    color: var(--primary);
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.qr-content {
+    padding: 0;
+}
+
+.qr-hero-section {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.qr-hero-icon-wrap {
+    width: 56px;
+    height: 56px;
+    background: var(--primary-light);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.qr-page-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 0.25rem;
+}
+
+.qr-page-desc {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* Upload */
+.qr-upload-area {
+    margin-bottom: 1.5rem;
+}
+
+.qr-drop-zone {
+    border: 2px dashed var(--border);
+    border-radius: 16px;
+    padding: 3.5rem 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: #FAFAFA;
+}
+
+.qr-drop-zone:hover,
+.qr-drop-zone.dragover {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+
+.qr-drop-icon {
+    margin-bottom: 1.25rem;
+}
+
+.qr-drop-zone h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 0.4rem;
+}
+
+.qr-hint {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.qr-constraint {
+    font-size: 0.7rem;
+    color: #9CA3AF;
+    font-weight: 600;
+}
+
+.qr-file-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--white);
+    border: 1px solid var(--border);
+    padding: 0.875rem 1.25rem;
+    border-radius: 10px;
+    margin-top: 0.75rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.qr-fname {
+    font-weight: 700;
+    color: var(--text-main);
+    flex: 1;
+}
+
+.qr-fsize {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.qr-remove {
+    background: #F3F4F6;
+    border: none;
+    color: #6B7280;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+/* Progress */
+.qr-progress-wrap {
+    margin-bottom: 1.5rem;
+}
+
+.qr-progress-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.75rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.qr-prog-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.qr-prog-top h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.qr-pct {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--primary);
+}
+
+.qr-prog-bar-bg {
+    height: 8px;
+    background: #F3F4F6;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.qr-prog-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #FF8C00, #FF6B00);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
+
+.qr-status-text {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+    font-weight: 500;
+}
+
+.qr-step-badges {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+}
+
+.qr-step {
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: #F3F4F6;
+    color: #9CA3AF;
+    transition: all 0.3s;
+}
+
+.qr-step.active {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.qr-step.done {
+    background: #F0FDF4;
+    color: #22C55E;
+}
+
+/* Error */
+.qr-error-wrap {
+    margin-bottom: 1.5rem;
+}
+
+.qr-error-box {
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.qr-error-box p {
+    color: #B91C1C;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* Results */
+.qr-results-wrap {
+    margin-top: 1.5rem;
+}
+
+.qr-results-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.qr-results-top h2 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.qr-results-sub {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-top: 0.2rem;
+}
+
+.qr-q-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.qr-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s;
+}
+
+.qr-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.qr-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.875rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    background: #FCFCFC;
+}
+
+.qr-card-num {
+    font-weight: 800;
+    color: var(--text-main);
+    font-size: 0.9rem;
+}
+
+.qr-card-diff {
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 0.2rem 0.65rem;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+}
+
+.qr-card-body {
+    padding: 1.25rem;
+}
+
+.qr-section {
+    margin-bottom: 1.25rem;
+}
+
+.qr-section h4 {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.6rem;
+}
+
+.qr-original {
+    color: #6B7280;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    padding: 0.875rem;
+    background: #F9FAFB;
+    border-radius: 8px;
+    border-left: 3px solid #D1D5DB;
+}
+
+.qr-redesigned {
+    color: var(--text-main);
+    font-size: 0.9rem;
+    line-height: 1.7;
+    font-weight: 500;
+    padding: 0.875rem;
+    background: var(--primary-light);
+    border-radius: 8px;
+    border-left: 3px solid var(--primary);
+}
+
+.qr-meta-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.qr-meta-box {
+    background: #F9FAFB;
+    padding: 0.875rem;
+    border-radius: 8px;
+}
+
+.qr-meta-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 0.4rem;
+}
+
+.qr-meta-box p {
+    font-size: 0.8rem;
+    color: #374151;
+    line-height: 1.5;
+}
