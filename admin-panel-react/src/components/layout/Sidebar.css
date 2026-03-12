@@ -1,5 +1,5 @@
 .sidebar {
-  width: var(--sidebar-width);
+  width: 68px;
   background: var(--white);
   border-right: 1px solid var(--border);
   display: flex;
@@ -10,10 +10,18 @@
   left: 0;
   top: 0;
   z-index: 50;
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.sidebar:hover {
+  width: var(--sidebar-width);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.08);
 }
 
 .sidebar-header {
   padding: 0 2rem 2.5rem;
+  white-space: nowrap;
 }
 
 .logo {
@@ -26,6 +34,12 @@
   font-size: 1.5rem;
   font-weight: 800;
   letter-spacing: -0.025em;
+  opacity: 0;
+  transition: opacity 0.2s ease 0.05s;
+}
+
+.sidebar:hover .logo-text {
+  opacity: 1;
 }
 
 .text-black {
@@ -47,12 +61,27 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 0.875rem 2rem;
+  padding: 0.875rem 1.4rem;
   color: var(--text-muted);
   text-decoration: none;
   font-weight: 500;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   border-right: 3px solid transparent;
+  white-space: nowrap;
+}
+
+.nav-item span {
+  opacity: 0;
+  transition: opacity 0.2s ease 0.05s;
+}
+
+.sidebar:hover .nav-item span {
+  opacity: 1;
+}
+
+.nav-item svg {
+  flex-shrink: 0;
+  min-width: 20px;
 }
 
 .nav-item:hover {
@@ -73,10 +102,22 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  overflow: hidden;
 }
 
 .create-btn {
   width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.create-btn span {
+  opacity: 0;
+  transition: opacity 0.2s ease 0.05s;
+}
+
+.sidebar:hover .create-btn span {
+  opacity: 1;
 }
 
 .logout-container {
@@ -97,6 +138,17 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.logout-btn span {
+  opacity: 0;
+  transition: opacity 0.2s ease 0.05s;
+}
+
+.sidebar:hover .logout-btn span {
+  opacity: 1;
 }
 
 .logout-btn:hover {

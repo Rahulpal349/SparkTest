@@ -8,7 +8,8 @@ import {
   BarChart2, 
   Layers,
   LogOut,
-  Plus
+  Plus,
+  Upload
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -18,7 +19,7 @@ const Sidebar = () => {
     { id: 'users', label: 'Users', icon: Users, path: '/users' },
     { id: 'tests', label: 'Tests', icon: BookOpen, path: '/tests' },
     { id: 'questions', label: 'Questions', icon: HelpCircle, path: '/questions' },
-    { id: 'redesigner', label: 'Redesigner', icon: Layers, path: '/redesigner' },
+    { id: 'import', label: 'Import', icon: Upload, path: '/import' },
     { id: 'analytics', label: 'Analytics', icon: BarChart2, path: '/analytics' },
   ];
 

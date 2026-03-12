@@ -7,6 +7,7 @@ import InstructionsPage from './pages/InstructionsPage';
 import TestInterfacePage from './pages/TestInterfacePage';
 import ScoreReportPage from './pages/ScoreReportPage';
 import ExamsPage from './pages/ExamsPage';
+import ExamDetailPage from './pages/ExamDetailPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
@@ -21,6 +22,7 @@ function App() {
         
         {/* Protected Routes */}
         <Route path="/exams" element={<ProtectedRoute><ExamsPage /></ProtectedRoute>} />
+        <Route path="/exams/:examId" element={<ProtectedRoute><ExamDetailPage /></ProtectedRoute>} />
         <Route path="/mock-tests" element={<ProtectedRoute><MockTestsPage /></ProtectedRoute>} />
         <Route path="/test-list" element={<ProtectedRoute><TestListPage /></ProtectedRoute>} />
         <Route path="/instructions" element={<ProtectedRoute><InstructionsPage /></ProtectedRoute>} />

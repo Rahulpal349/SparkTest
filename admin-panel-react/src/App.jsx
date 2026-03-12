@@ -4,8 +4,8 @@ import Dashboard from './pages/Dashboard';
 import Users from './pages/Users';
 import Tests from './pages/Tests';
 import Questions from './pages/Questions';
-import Redesigner from './pages/Redesigner';
 import Analytics from './pages/Analytics';
+import ImportQuestions from './pages/ImportQuestions';
 
 function App() {
   return (
@@ -16,8 +16,8 @@ function App() {
           <Route path="/users" element={<Users />} />
           <Route path="/tests" element={<Tests />} />
           <Route path="/questions" element={<Questions />} />
-          <Route path="/redesigner" element={<Redesigner />} />
           <Route path="/analytics" element={<Analytics />} />
+          <Route path="/import" element={<ImportQuestions />} />
         </Routes>
       </DashboardLayout>
     </Router>
