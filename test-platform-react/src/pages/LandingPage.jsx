@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
-
+import { useAuth } from '../context/AuthContext';
 export default function LandingPage() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   useEffect(() => {
     document.title = 'SparkTest - Power Up Your Preparation for Govt. EE Exams';
   }, []);
@@ -22,12 +24,23 @@ export default function LandingPage() {
           </Link>
           <ul className="nav-links">
             <li><Link to="/exams">Test Series</Link></li>
-            <li><Link to="#">Live Test</Link></li>
+            <li><Link to="/mock-tests">Live Test</Link></li>
             <li><Link to="#">About</Link></li>
           </ul>
           <div className="nav-actions">
-            <Link to="/login" className="login-link">Log In</Link>
-            <Link to="/signup" className="btn btn-primary">Sign Up</Link>
+            {user ? (
+              <button 
+                onClick={() => navigate('/exams')} 
+                className="btn btn-primary"
+              >
+                Go to Dashboard
+              </button>
+            ) : (
+              <>
+                <Link to="/login" className="login-link">Log In</Link>
+                <Link to="/signup" className="btn btn-primary">Sign Up</Link>
+              </>
+            )}
           </div>
         </nav>
       </header>
@@ -44,10 +57,12 @@ export default function LandingPage() {
               <p className="hero-description">
                 Master core electrical engineering concepts with our comprehensive mock test series designed by top-tier educators and industry experts.
               </p>
-              <div className="hero-ctas">
-                <Link to="/signup" className="btn btn-primary btn-large">Take a Free Mock Test</Link>
-                <Link to="/exams" className="btn btn-secondary btn-large">View Exam Schedule</Link>
-              </div>
+              {!user && (
+                <div className="hero-ctas">
+                  <Link to="/signup" className="btn btn-primary btn-large">Take a Free Mock Test</Link>
+                  <Link to="/exams" className="btn btn-secondary btn-large">View Exam Schedule</Link>
+                </div>
+              )}
             </div>
           </div>
         </section>

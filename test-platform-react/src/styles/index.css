@@ -81,39 +81,98 @@ h3 {
     border-radius: 0.5rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border: none;
+    position: relative;
+    overflow: hidden;
 }
 
+/* Liquid Glass Primary Button */
 .btn-primary {
-    background-color: var(--primary);
+    background: rgba(34, 197, 94, 0.85); /* Vibrant Green Semi-transparent */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     color: var(--white);
-    box-shadow: 0 4px 14px 0 rgba(34, 197, 94, 0.39);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 
+        0 8px 32px 0 rgba(34, 197, 94, 0.3), /* Outer glow */
+        inset 0 1px 1px rgba(255, 255, 255, 0.6), /* Top inner highlight */
+        inset 0 -2px 6px rgba(0, 0, 0, 0.1); /* Bottom shadow */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+/* Shine Effect */
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+    transform: skewX(-25deg);
+    z-index: -1;
+    transition: all 0.6s ease;
+}
+
+.btn-primary:hover::before {
+    left: 150%;
 }
 
 .btn-primary:hover {
-    background-color: var(--primary-dark);
-    transform: translateY(-1px);
+    background: rgba(34, 197, 94, 0.95);
+    transform: translateY(-2px);
+    box-shadow: 
+        0 12px 40px 0 rgba(34, 197, 94, 0.4),
+        inset 0 1px 1px rgba(255, 255, 255, 0.8),
+        inset 0 -2px 6px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.6);
 }
 
+.btn-primary:active {
+    transform: translateY(1px);
+    box-shadow: 
+        0 4px 16px 0 rgba(34, 197, 94, 0.2),
+        inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Liquid Glass Outline / Secondary Button */
 .btn-outline {
-    background-color: var(--white);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     color: var(--text-main);
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 
+        0 4px 16px 0 rgba(0, 0, 0, 0.05),
+        inset 0 1px 1px rgba(255, 255, 255, 0.6);
+    z-index: 1;
 }
 
 .btn-outline:hover {
-    background-color: var(--bg-light);
-    border-color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+    border-color: rgba(34, 197, 94, 0.3);
+    box-shadow: 
+        0 8px 24px 0 rgba(0, 0, 0, 0.08),
+        inset 0 1px 1px rgba(255, 255, 255, 0.8);
+    color: var(--primary-dark);
 }
 
-/* Glassmorphism */
+.btn-outline:active {
+    transform: translateY(1px);
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Glassmorphism General Utility */
 .glass {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
 }
 
 /* Header */
@@ -280,8 +339,18 @@ h3 {
     margin-bottom: 4rem;
 }
 
+.section-header h2 {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: #111827;
+    margin-bottom: 0.5rem;
+}
+
 .section-header p {
     color: var(--text-muted);
+    font-size: 1rem;
+    margin: 0 auto;
+    max-width: 600px;
 }
 
 .exam-grid {
@@ -289,6 +358,8 @@ h3 {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
 }
+
+
 
 .exam-card {
     background: var(--white);
@@ -588,9 +659,11 @@ h3 {
 
 /* Authentication Pages */
 .auth-page {
-    min-height: 100vh;
+    height: 100vh;
+    max-height: 100vh;
     display: flex;
     background: #fff;
+    overflow: hidden; /* Prevent body scrolling */
 }
 
 .auth-container {
@@ -601,55 +674,57 @@ h3 {
 .auth-sidebar {
     width: 45%;
     background: #E8F5E9;
-    padding: 3rem;
+    padding: 1.5rem 2.5rem; /* Tightened padding to fit strictly on screen */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    position: sticky;
-    top: 0;
-    height: 100vh;
+    height: 100%; /* Fill the 100vh container */
+    overflow: hidden; /* Prevent scrolling within sidebar */
 }
 
 .auth-sidebar .logo-link-wrapper {
-    margin-bottom: 4rem;
+    margin-bottom: 1rem; /* Dramatically reduced from 2rem to close the gap */
 }
 
 .auth-sidebar-content {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start; /* Ensure elements start right beneath the logo */
 }
 
 .auth-sidebar h1 {
-    font-size: 2.5rem;
+    font-size: 2.25rem; /* Slightly reduced for better fit */
     font-weight: 800;
     line-height: 1.2;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     color: #111827;
 }
 
 .auth-sidebar p {
-    font-size: 1.1rem;
+    font-size: 1rem; /* Slightly reduced */
     color: #4B5563;
-    line-height: 1.6;
-    margin-bottom: 2rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
     max-width: 400px;
 }
 
 .auth-illustration-box {
     background: rgba(255, 255, 255, 0.5);
     border-radius: 24px;
-    padding: 2rem;
+    padding: 1rem; /* Slightly reduced padding to allow image to be strictly maximum size */
     display: flex;
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    flex-grow: 1; /* Allow the box to grow to fill available space */
 }
 
 .auth-illustration-box img {
     max-width: 100%;
+    max-height: 50vh; /* Restore a protective max-height to ensure it doesn't break the layout */
     height: auto;
+    object-fit: contain;
     border-radius: 12px;
 }
 
@@ -663,7 +738,9 @@ h3 {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 4rem 2rem;
+    padding: 2rem; /* Tightened padding */
+    height: 100%;
+    overflow-y: auto; /* Only allow form side to scroll if form is extremely long on tiny screens */
 }
 
 .auth-card {
@@ -775,21 +852,35 @@ h3 {
 .btn-social {
     width: 100%;
     padding: 0.75rem;
-    border: 1px solid #E5E7EB;
+    border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 10px;
-    background: #fff;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     color: #374151;
     font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.75rem;
-    transition: all 0.2s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 
+        0 4px 16px 0 rgba(0, 0, 0, 0.03),
+        inset 0 1px 1px rgba(255, 255, 255, 0.8);
 }
 
 .btn-social:hover {
-    background: #F9FAFB;
-    border-color: #D1D5DB;
+    background: rgba(255, 255, 255, 0.7);
+    border-color: rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 
+        0 8px 24px 0 rgba(0, 0, 0, 0.05),
+        inset 0 1px 1px rgba(255, 255, 255, 1);
+}
+
+.btn-social:active {
+    transform: translateY(1px);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .auth-footer-text {
@@ -805,11 +896,18 @@ h3 {
 }
 
 @media (max-width: 992px) {
+    .auth-container {
+        flex-direction: column;
+    }
     .auth-sidebar {
-        display: none;
+        width: 100%;
+        height: auto;
+        padding: 2rem 1.5rem;
+        position: static;
     }
     .auth-form-section {
         width: 100%;
+        padding: 2rem 1rem;
     }
 }
 
@@ -1249,11 +1347,18 @@ h3 {
 }
 
 @media (max-width: 992px) {
+    .auth-container {
+        flex-direction: column;
+    }
     .auth-sidebar {
-        display: none;
+        width: 100%;
+        height: auto;
+        padding: 2rem 1.5rem;
+        position: static;
     }
     .auth-form-section {
         width: 100%;
+        padding: 2rem 1rem;
     }
 }
 

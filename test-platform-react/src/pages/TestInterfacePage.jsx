@@ -167,7 +167,7 @@ export default function TestInterfacePage() {
         <div className="ti-header-left">
           <div className="ti-logo">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="#22C55E" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            <span className="ti-logo-text">SparkTest</span>
+            <span className="ti-logo-text"><span className="text-black">Spark</span><span className="text-primary">Test</span></span>
           </div>
           <div className="ti-header-divider"></div>
           <div className="ti-test-info">

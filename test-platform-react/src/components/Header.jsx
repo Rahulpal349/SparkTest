@@ -12,7 +12,7 @@ export default function Header() {
         <Logo size={32} />
         <ul className="nav-links">
           <li><Link to="/exams">Test Series</Link></li>
-          <li><Link to="#">Live Test</Link></li>
+          <li><Link to="/mock-tests">Live Test</Link></li>
           <li><Link to="#">PYQs</Link></li>
           <li><Link to="#">Practice</Link></li>
         </ul>

@@ -17,22 +17,67 @@ export async function extractTextFromPDF(file) {
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
     const textContent = await page.getTextContent();
-    
-    // Sort items by vertical position top-to-bottom, then horizontal left-to-right
-    // This is much more robust for complex PDF layouts
-    const items = textContent.items.sort((a, b) => {
-      if (Math.abs(a.transform[5] - b.transform[5]) < 5) { // Same line (5px threshold)
-        return a.transform[4] - b.transform[4];
-      }
-      return b.transform[5] - a.transform[5]; // Higher Y is higher on page
-    });
+    const items = textContent.items;
 
-    const pageText = items.map(item => item.str).join(' ');
+    if (items.length === 0) continue;
+
+    // Detect if the page has multiple columns
+    // We group items by their X-coordinate (transform[4])
+    const xCoords = items.map(item => Math.floor(item.transform[4] / 10) * 10); // Round to nearest 10px
+    const xClusters = {};
+    xCoords.forEach(x => xClusters[x] = (xClusters[x] || 0) + 1);
+    
+    // Sort clusters by frequency to find primary columns
+    const sortedClusters = Object.keys(xClusters)
+      .map(Number)
+      .sort((a, b) => xClusters[b] - xClusters[a]);
+    
+    // If we have distinct X-clusters that are far apart, it's likely multi-column
+    // Usually columns are at least 150-200px apart
+    const columns = [];
+    if (sortedClusters.length > 1) {
+      // Simple heuristic: if we have significant clusters more than 150px apart
+      const significantClusters = sortedClusters.filter(x => xClusters[x] > items.length * 0.05);
+      significantClusters.sort((a, b) => a - b);
+      
+      let lastX = -1000;
+      for (const x of significantClusters) {
+        if (x - lastX > 150) {
+          columns.push(x);
+          lastX = x;
+        }
+      }
+    }
+
+    let sortedItems;
+    if (columns.length > 1) {
+      // Multi-column sort: Column -> Y (top to bottom) -> X (left to right)
+      sortedItems = [...items].sort((a, b) => {
+        const colA = columns.reduce((prev, curr) => (a.transform[4] >= curr ? curr : prev), columns[0]);
+        const colB = columns.reduce((prev, curr) => (b.transform[4] >= curr ? curr : prev), columns[0]);
+        
+        if (colA !== colB) return colA - colB;
+        
+        // Same column: Sort by Y (inverted since higher Y is higher on page)
+        if (Math.abs(a.transform[5] - b.transform[5]) < 5) {
+          return a.transform[4] - b.transform[4];
+        }
+        return b.transform[5] - a.transform[5];
+      });
+    } else {
+      // Single column sort: Y (top to bottom) -> X (left to right)
+      sortedItems = [...items].sort((a, b) => {
+        if (Math.abs(a.transform[5] - b.transform[5]) < 5) {
+          return a.transform[4] - b.transform[4];
+        }
+        return b.transform[5] - a.transform[5];
+      });
+    }
+
+    const pageText = sortedItems.map(item => item.str).join(' ');
     fullText += pageText + '\n';
   }
 
-  // Debug: Log a snippet of extracted text to see how symbols are rendered
-  console.log('PDF Text Extract Snippet:', fullText.substring(0, 1000));
   return fullText;
 }
 
@@ -133,7 +178,9 @@ function parseSingleQuestion(block) {
     optionsText = content.slice(ansMatch.index + ansMatch[0].length).trim();
   } else {
     // Try to split at first numbered option (1. or 1))
-    const firstOptMatch = content.match(/(?:^|\s)(?:[\u2713-\u2718✓✔✗✘✕✖❌❎]|\btick\b|\bcross\b)?\s*1[\.\)]\s*/i);
+    // Refined regex to avoid split by metadata IDs like "Option 1 ID"
+    // We look for a number followed by . or ) and then NOT followed by "ID" or similar metadata markers
+    const firstOptMatch = content.match(/(?:^|\s)(?:[\u2713-\u2718✓✔✗✘✕✖❌❎]|\btick\b|\bcross\b)?\s*1[\.\)]\s+(?!ID|Chosen)/i);
     if (firstOptMatch) {
       questionText = content.slice(0, firstOptMatch.index).trim();
       optionsText = content.slice(firstOptMatch.index).trim();
@@ -145,10 +192,11 @@ function parseSingleQuestion(block) {
   if (!questionText || !optionsText) return null;
 
   let correctOptionId = null;
+  let options = [];
 
   // Split options by numbered pattern - make symbols and numbers optional/flexible
-  // Increased robustness of the split regex
-  const optionParts = optionsText.split(/(?=(?:[\u2713-\u2718\u2705\u2611✓✔✗✘✕✖\u274C\u274E❌❎]|\btick\b|\bcross\b)?\s*[1-4][\.\)])/i);
+  // Increased robustness of the split regex with negative lookahead for IDs
+  const optionParts = optionsText.split(/(?=(?:[\u2713-\u2718\u2705\u2611✓✔✗✘✕✖\u274C\u274E❌❎]|\btick\b|\bcross\b)?\s*[1-4][\.\)]\s+(?!ID|Chosen))/i);
 
   for (const part of optionParts) {
     const trimmedPart = part.trim();
@@ -157,18 +205,20 @@ function parseSingleQuestion(block) {
     const symbolRegex = /[\u2713-\u2714✓✔\u2705\u2611]|\btick\b/i;
     const isCorrect = symbolRegex.test(trimmedPart) || trimmedPart.includes('✔') || trimmedPart.includes('✓');
     
-    const wrongRegex = /[\u2715-\u2718✗✘✕✖\u274C\u274E❌❎]|\bcross\b/i;
-    const isWrong = wrongRegex.test(trimmedPart) || trimmedPart.includes('✗');
-
-    // Extract option number and text
-    const optMatch = trimmedPart.match(/(?:.*?)?([1-4])[\.\)]\s*(.*)/s);
+    // Extract option number and text - must NOT be followed by "ID"
+    const optMatch = trimmedPart.match(/(?:.*?)?([1-4])[\.\)]\s+(?!ID|Chosen)(.*)/s);
     if (optMatch) {
       const optId = parseInt(optMatch[1]);
       let optText = optMatch[2].trim();
 
       // Clean up the option text
       optText = optText.replace(/[\u2713-\u2718\u2705\u2611✓✔✗✘✕✖\u274C\u274E❌❎]/g, '').trim();
-      optText = optText.replace(/\s*(Que|Chosen|Question|Ques).*$/i, '').trim();
+      
+      // Stop if we hit metadata markers
+      const metaIndex = optText.search(/(?:Que|Chosen|Question|Ques).*$/i);
+      if (metaIndex !== -1) {
+        optText = optText.substring(0, metaIndex).trim();
+      }
 
       if (optText) {
         options.push({ id: optId, text: optText });
@@ -210,21 +260,11 @@ function parseSingleQuestion(block) {
     }
   }
 
-  // Auto-Correction: Process of elimination
-  if (correctOptionId === null && options.length === 4) {
-    const wrongRegex = /[\u2715-\u2718✗✘✕✖\u274C\u274E❌❎]|\bcross\b/i;
-    const partsWithWrongSymbol = optionParts.filter(p => wrongRegex.test(p)).length;
-    if (partsWithWrongSymbol === 3) {
-      const winnerPart = optionParts.find(p => p.match(/[1-4][\.\)]/) && !wrongRegex.test(p));
-      const winnerMatch = winnerPart?.match(/([1-4])[\.\)]/);
-      if (winnerMatch) correctOptionId = parseInt(winnerMatch[1]);
-    }
-  }
-
   // Only return if we have at least 2 options
   if (options.length < 2) return null;
 
   return {
+    id: crypto.randomUUID(), // Stable ID for React keys
     number: questionNumber,
     question_text: questionText,
     options: options,
@@ -238,7 +278,6 @@ function parseSingleQuestion(block) {
  */
 export function parseQuestionsAlternative(rawText) {
   const questions = [];
-  // Normalize then split by anything that looks like a question number start at a newline
   const text = rawText.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
   const blocks = text.split(/(?=(?:^|\n|\r)(?:Q(?:uestion)?[\.\s:]+)?\d+[\.\)]\s)/i);
   

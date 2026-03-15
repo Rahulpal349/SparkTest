@@ -101,8 +101,8 @@ const ImportQuestions = () => {
     }
   };
 
-  const handleDeleteQuestion = (index) => {
-    setQuestions(prev => prev.filter((_, i) => i !== index));
+  const handleDeleteQuestion = (id) => {
+    setQuestions(prev => prev.filter(q => q.id !== id));
   };
 
   const handleEditStart = (index) => {
@@ -168,6 +168,7 @@ const ImportQuestions = () => {
 
   const handleAddManualQuestion = () => {
     const newQuestion = {
+      id: crypto.randomUUID(),
       number: questions.length + 1,
       question_text: '',
       options: [
@@ -415,7 +416,7 @@ const ImportQuestions = () => {
               const showSectionHeader = q.section && (!prevQ || prevQ.section !== q.section);
               
               return (
-                <React.Fragment key={idx}>
+                <React.Fragment key={q.id}>
                   {showSectionHeader && (
                     <div className="section-divider">
                       <span className="section-divider-text">{q.section}</span>
@@ -533,7 +534,7 @@ const ImportQuestions = () => {
                         <button className="icon-btn edit" onClick={() => handleEditStart(idx)} title="Edit">
                           <Edit2 size={14} />
                         </button>
-                        <button className="icon-btn delete" onClick={() => handleDeleteQuestion(idx)} title="Delete">
+                        <button className="icon-btn delete" onClick={() => handleDeleteQuestion(q.id)} title="Delete">
                           <Trash2 size={14} />
                         </button>
                       </div>

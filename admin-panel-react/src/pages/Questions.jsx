@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Edit2, Trash2, X, ChevronLeft, ChevronRight, Filter, Image as ImageIcon } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, X, ChevronLeft, ChevronRight, Filter, Image as ImageIcon, RotateCcw, AlertTriangle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import './Questions.css';
 
@@ -11,6 +11,9 @@ const Questions = () => {
   const [categoryFilter, setCategoryFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [resetting, setResetting] = useState(false);
+  
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -48,6 +51,29 @@ const Questions = () => {
     }
   };
 
+  const handleResetBank = async () => {
+    setResetting(true);
+    try {
+      // Direct delete without filter to clear everything
+      const { error } = await supabase
+        .from('questions')
+        .delete()
+        .neq('id', '00000000-0000-0000-0000-000000000000'); // Dummy filter for bypass
+
+      if (error) throw error;
+      
+      setQuestions([]);
+      setTotalCount(0);
+      setShowResetConfirm(false);
+      alert('Question bank has been reset successfully.');
+    } catch (err) {
+      console.error('Reset error:', err);
+      alert('Failed to reset bank: ' + err.message);
+    } finally {
+      setResetting(false);
+    }
+  };
+
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
   const clearFilters = () => {
@@ -59,161 +85,164 @@ const Questions = () => {
 
   return (
     <div className="questions-page fade-in">
-      <div className="page-header">
-        <div>
-          <h1 className="page-title">Question Bank</h1>
-          <p className="page-desc">Manage and organize your assessment questions and quiz library.</p>
+      <div className="page-header-premium">
+        <div className="header-info">
+          <h1 className="page-title-premium">Question Bank</h1>
+          <p className="page-desc-premium">Manage your central repository of {totalCount} assessment items.</p>
         </div>
-        <button className="btn btn-primary">
-          <Plus size={18} />
-          <span>Add Question</span>
-        </button>
+        <div className="header-actions">
+          <button className="btn-reset-premium" onClick={() => setShowResetConfirm(true)}>
+            <RotateCcw size={16} />
+            <span>Reset Bank</span>
+          </button>
+          <button className="btn-add-premium">
+            <Plus size={18} />
+            <span>New Question</span>
+          </button>
+        </div>
       </div>
 
-      <div className="card">
-        <div className="table-controls">
-          <div className="search-box">
-            <Search size={20} className="text-muted" />
+      <div className="glass-card main-content">
+        <div className="table-controls-premium">
+          <div className="search-bar-premium">
+            <Search size={18} className="search-icon" />
             <input 
               type="text" 
-              placeholder="Search questions by content, ID, or tags..." 
+              placeholder="Search by question text or tags..." 
               value={searchTerm}
               onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
             />
           </div>
           
-          <div className="filter-row">
-            <div className="filter-group">
-              <Filter size={16} className="text-muted" />
-              <select 
-                className="filter-select"
-                value={difficultyFilter}
-                onChange={(e) => { setDifficultyFilter(e.target.value); setCurrentPage(1); }}
-              >
-                <option value="">Difficulty</option>
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
-              </select>
-              <select 
-                className="filter-select"
-                value={categoryFilter}
-                onChange={(e) => { setCategoryFilter(e.target.value); setCurrentPage(1); }}
-              >
-                <option value="">Category</option>
-                <option value="electrical">Electrical</option>
-                <option value="electronics">Electronics</option>
-                <option value="general">General Awareness</option>
-              </select>
+          <div className="filters-row-premium">
+            <div className="filter-select-group">
+              <div className="select-wrapper">
+                <Filter size={14} className="select-icon" />
+                <select 
+                  value={difficultyFilter}
+                  onChange={(e) => { setDifficultyFilter(e.target.value); setCurrentPage(1); }}
+                >
+                  <option value="">All Difficulty</option>
+                  <option value="easy">Easy</option>
+                  <option value="medium">Medium</option>
+                  <option value="hard">Hard</option>
+                </select>
+              </div>
+              <div className="select-wrapper">
+                <select 
+                  value={categoryFilter}
+                  onChange={(e) => { setCategoryFilter(e.target.value); setCurrentPage(1); }}
+                >
+                  <option value="">All Categories</option>
+                  <option value="electrical">Electrical</option>
+                  <option value="electronics">Electronics</option>
+                  <option value="general">General Awareness</option>
+                  <option value="reasoning">Reasoning</option>
+                </select>
+              </div>
             </div>
 
             {(difficultyFilter || categoryFilter || searchTerm) && (
-              <div className="active-filters">
-                {difficultyFilter && (
-                  <span className="filter-tag">
-                    {difficultyFilter.toUpperCase()}
-                    <X size={12} onClick={() => setDifficultyFilter('')} />
-                  </span>
-                )}
-                {categoryFilter && (
-                  <span className="filter-tag">
-                    {categoryFilter.toUpperCase()}
-                    <X size={12} onClick={() => setCategoryFilter('')} />
-                  </span>
-                )}
-                <button className="clear-all-btn" onClick={clearFilters}>Clear All</button>
-              </div>
+              <button className="btn-clear-pill" onClick={clearFilters}>
+                Clear Filters
+                <X size={12} />
+              </button>
             )}
           </div>
         </div>
 
-        <div className="table-responsive">
-          <table className="questions-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>QUESTION CONTENT</th>
-                <th>CATEGORY</th>
-                <th>DIFFICULTY</th>
-                <th>ACTIONS</th>
-              </tr>
-            </thead>
-            <tbody>
-              {questions.length > 0 ? (
-                questions.map((q) => (
-                  <tr key={q.id}>
-                    <td className="id-cell">Q-{q.id.toString().slice(-4)}</td>
-                    <td className="content-cell">
-                      <div className="question-content-wrapper">
-                        {q.image_url && (
-                          <div className="q-table-image-thumb">
-                            <ImageIcon size={14} className="text-primary" />
-                          </div>
-                        )}
-                        <div className="question-text-truncate">
-                          {q.question_text}
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <span className="category-badge">
-                        {q.category?.toUpperCase() || 'GENERAL'}
-                      </span>
-                    </td>
-                    <td>
-                      <span className={`difficulty-indicator ${q.difficulty || 'easy'}`}>
-                        <span className="dot"></span>
-                        {q.difficulty ? q.difficulty.charAt(0).toUpperCase() + q.difficulty.slice(1) : 'Easy'}
-                      </span>
-                    </td>
-                    <td>
-                      <div className="action-btns">
-                        <button className="icon-action-btn edit" title="Edit">
-                          <Edit2 size={16} />
-                        </button>
-                        <button className="icon-action-btn delete" title="Delete">
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
+        <div className="questions-list-premium">
+          {loading ? (
+            <div className="loading-state-premium">
+               <div className="spinner-premium"></div>
+               <p>Fetching questions...</p>
+            </div>
+          ) : questions.length > 0 ? (
+            <div className="table-wrapper-premium">
+              <table className="premium-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>QUESTION</th>
+                    <th>TOPIC</th>
+                    <th>DIFFICULTY</th>
+                    <th className="text-right">ACTIONS</th>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="5" className="empty-state">
-                    {loading ? 'Loading questions...' : 'No questions found matching your criteria.'}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  {questions.map((q) => (
+                    <tr key={q.id}>
+                      <td className="id-col">
+                         <span className="id-tag">Q-{q.id.toString().slice(0, 4)}</span>
+                      </td>
+                      <td className="question-col">
+                        <div className="question-content-premium">
+                          {q.image_url && <ImageIcon size={14} className="img-indicator" title="Has figure" />}
+                          <span className="q-text-premium">{q.question_text}</span>
+                        </div>
+                      </td>
+                      <td className="topic-col">
+                        <span className="topic-tag">{q.category?.toUpperCase() || 'ELECTRICAL'}</span>
+                      </td>
+                      <td className="diff-col">
+                        <span className={`diff-pill ${q.difficulty || 'easy'}`}>
+                          {q.difficulty?.toUpperCase() || 'EASY'}
+                        </span>
+                      </td>
+                      <td className="actions-col">
+                        <div className="btn-group-premium">
+                          <button className="btn-action-premium edit" title="Edit">
+                            <Edit2 size={14} />
+                          </button>
+                          <button className="btn-action-premium delete" title="Delete">
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="empty-state-premium">
+              <div className="empty-icon-wrapper">
+                <Search size={40} />
+              </div>
+              <h3>No questions found</h3>
+              <p>Try adjusting your search terms or filters.</p>
+            </div>
+          )}
         </div>
 
-        <div className="pagination-container">
-          <span className="showing-text">
-            Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, totalCount)} of {totalCount} questions
-          </span>
-          <div className="pagination">
+        {/* Improved Pagination */}
+        <div className="pagination-footer-premium">
+          <div className="pagination-info">
+            Showing <span>{(currentPage - 1) * itemsPerPage + 1}</span>-<span>{Math.min(currentPage * itemsPerPage, totalCount)}</span> of <strong>{totalCount}</strong>
+          </div>
+          <div className="pagination-btns-premium">
             <button 
-              className="chevron-btn"
+              className="btn-nav-premium"
               disabled={currentPage === 1}
               onClick={() => setCurrentPage(prev => prev - 1)}
             >
               <ChevronLeft size={18} />
             </button>
-            
-            {[...Array(totalPages)].map((_, i) => (
-              <button 
-                key={i + 1}
-                className={`page-btn ${currentPage === i + 1 ? 'active' : ''}`}
-                onClick={() => setCurrentPage(i + 1)}
-              >
-                {i + 1}
-              </button>
-            )).slice(Math.max(0, currentPage - 3), Math.min(totalPages, currentPage + 2))}
-            
+            <div className="page-numbers-premium">
+               {currentPage > 3 && <span className="ellipsis-premium">...</span>}
+               {[...Array(totalPages)].map((_, i) => (
+                  <button 
+                    key={i + 1}
+                    className={`num-btn-premium ${currentPage === i + 1 ? 'active' : ''}`}
+                    onClick={() => setCurrentPage(i + 1)}
+                  >
+                    {i + 1}
+                  </button>
+                )).slice(Math.max(0, currentPage - 3), Math.min(totalPages, currentPage + 2))}
+               {currentPage < totalPages - 2 && <span className="ellipsis-premium">...</span>}
+            </div>
             <button 
-              className="chevron-btn"
+              className="btn-nav-premium"
               disabled={currentPage === totalPages}
               onClick={() => setCurrentPage(prev => prev + 1)}
             >
@@ -222,6 +251,38 @@ const Questions = () => {
           </div>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {showResetConfirm && (
+        <div className="modal-overlay-premium">
+          <div className="modal-card-premium destructive scale-in">
+            <div className="modal-header-danger">
+              <AlertTriangle size={24} />
+              <h2>Reset Question Bank?</h2>
+            </div>
+            <div className="modal-body-premium">
+              <p>This action will <strong>permanently delete all questions</strong> from the repository. This cannot be undone.</p>
+              <p className="sub-text">Are you absolutely sure you want to proceed?</p>
+            </div>
+            <div className="modal-footer-premium">
+              <button 
+                className="btn-modal-secondary" 
+                onClick={() => setShowResetConfirm(false)}
+                disabled={resetting}
+              >
+                Cancel
+              </button>
+              <button 
+                className="btn-modal-danger" 
+                onClick={handleResetBank}
+                disabled={resetting}
+              >
+                {resetting ? <span className="spinner-mini"></span> : 'Yes, Delete Everything'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

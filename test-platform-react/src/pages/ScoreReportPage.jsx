@@ -97,10 +97,10 @@ export default function ScoreReportPage() {
       {/* Header */}
       <header className="sr-header">
         <div className="sr-header-container">
-          <div className="sr-logo">
+          <Link to="/" className="sr-logo" style={{ textDecoration: 'none', color: 'inherit' }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="#22C55E" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            <span className="sr-logo-text">SparkTest</span>
-          </div>
+            <span className="sr-logo-text"><span className="text-black">Spark</span><span className="text-primary">Test</span></span>
+          </Link>
           <div className="sr-header-right">
             <div className="sr-user">
               <div className="sr-user-info">

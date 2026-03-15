@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Logo from './Logo';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
@@ -7,6 +7,7 @@ import { supabase } from '../lib/supabase';
 export default function UserHeader() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   
   const fullName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
   
@@ -19,9 +20,9 @@ export default function UserHeader() {
     <header className="user-header">
       <Logo size={28} />
       <nav className="user-nav">
-        <Link to="/exams" className="active">Test Series</Link>
-        <Link to="#">My Tests</Link>
-        <Link to="#">Performance</Link>
+        <Link to="/exams" className={location.pathname === '/exams' ? 'active' : ''}>Test Series</Link>
+        <Link to="/mock-tests" className={location.pathname === '/mock-tests' ? 'active' : ''}>My Tests</Link>
+        <Link to="/performance" className={location.pathname === '/performance' ? 'active' : ''}>Performance</Link>
       </nav>
       <div className="user-profile-info" style={{ gap: '1.5rem' }}>
         <div className="date-info">

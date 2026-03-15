@@ -12,6 +12,7 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+import PerformancePage from './pages/PerformancePage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
         <Route path="/exams/:examId" element={<ProtectedRoute><ExamDetailPage /></ProtectedRoute>} />
         <Route path="/mock-tests" element={<ProtectedRoute><MockTestsPage /></ProtectedRoute>} />
         <Route path="/test-list" element={<ProtectedRoute><TestListPage /></ProtectedRoute>} />
+        <Route path="/performance" element={<ProtectedRoute><PerformancePage /></ProtectedRoute>} />
         <Route path="/instructions" element={<ProtectedRoute><InstructionsPage /></ProtectedRoute>} />
         <Route path="/test-interface" element={<ProtectedRoute><TestInterfacePage /></ProtectedRoute>} />
         <Route path="/score-report" element={<ProtectedRoute><ScoreReportPage /></ProtectedRoute>} />

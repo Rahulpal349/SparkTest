@@ -52,12 +52,12 @@ export default function InstructionsPage() {
       {/* Header */}
       <header className="instructions-header">
         <div className="header-left">
-          <div className="logo">
+          <Link to="/" className="logo" style={{ textDecoration: 'none', color: 'inherit' }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="#22C55E" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            <span className="logo-text">SparkTest</span>
-          </div>
+            <span className="logo-text"><span className="text-black">Spark</span><span className="text-primary">Test</span></span>
+          </Link>
         </div>
         <div className="header-center">
           <h2 className="exam-title">{test?.title || 'Mock Test'}</h2>
