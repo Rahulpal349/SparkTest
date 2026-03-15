@@ -46,11 +46,16 @@ const ImportQuestions = () => {
   const handleFileDrop = (e) => {
     e.preventDefault();
     const droppedFile = e.dataTransfer?.files[0] || e.target.files[0];
-    if (droppedFile && droppedFile.type === 'application/pdf') {
-      setFile(droppedFile);
-      setParseError('');
-    } else {
-      setParseError('Please upload a valid PDF file.');
+    if (droppedFile) {
+      if (droppedFile.type === 'application/pdf' || droppedFile.name.endsWith('.pdf')) {
+        setFile(droppedFile);
+        setParseError('');
+      } else if (droppedFile.type === 'application/json' || droppedFile.name.endsWith('.json')) {
+        setFile(droppedFile);
+        setParseError('');
+      } else {
+        setParseError('Please upload a valid PDF or JSON file.');
+      }
     }
   };
 
@@ -60,6 +65,23 @@ const ImportQuestions = () => {
     setParseError('');
 
     try {
+      if (file.name.endsWith('.json')) {
+        const text = await file.text();
+        const json = JSON.parse(text);
+        if (Array.isArray(json)) {
+          setQuestions(json.map(q => ({
+            ...q,
+            id: q.id || crypto.randomUUID(),
+            options: q.options || [],
+            correct_option_id: q.correct_option_id || null
+          })));
+          setStep(2);
+        } else {
+          setParseError('JSON must be an array of question objects.');
+        }
+        return;
+      }
+
       const rawText = await extractTextFromPDF(file);
       
       // Try primary parser first
@@ -139,6 +161,8 @@ const ImportQuestions = () => {
         question_text: q.question_text,
         options: q.options,
         correct_option_id: q.correct_option_id,
+        explanation: q.explanation || null,
+        subject_tag: q.subject_tag || null,
         category: category,
         difficulty: difficulty,
         image_url: q.image_url || null,
@@ -231,7 +255,7 @@ const ImportQuestions = () => {
       <div className="page-header">
         <div>
           <h1 className="page-title">Import Questions from PDF</h1>
-          <p className="page-desc">Upload an Adda247-style PDF to bulk-import questions into a test.</p>
+          <p className="page-desc">Upload PDF to bulk-import questions into a test.</p>
         </div>
       </div>
 
@@ -271,7 +295,7 @@ const ImportQuestions = () => {
             />
             {file ? (
               <div className="file-info">
-                <FileText size={40} className="file-icon" />
+                {file.name.endsWith('.json') ? <FileText size={40} className="file-icon json" style={{color: '#3B82F6'}} /> : <FileText size={40} className="file-icon" />}
                 <p className="file-name">{file.name}</p>
                 <p className="file-size">{(file.size / 1024).toFixed(1)} KB</p>
                 <button className="change-file-btn" onClick={(e) => { e.stopPropagation(); setFile(null); }}>
@@ -281,8 +305,8 @@ const ImportQuestions = () => {
             ) : (
               <div className="drop-zone-content">
                 <Upload size={48} className="upload-icon" />
-                <p className="drop-text">Drag & drop your PDF here</p>
-                <p className="drop-subtext">or click to browse files</p>
+                <p className="drop-text">Drag & drop your PDF or JSON here</p>
+                <p className="drop-subtext">Supports Adda247 PDFs and structured JSON bank</p>
               </div>
             )}
           </div>
@@ -339,12 +363,12 @@ const ImportQuestions = () => {
               {parsing ? (
                 <>
                   <span className="spinner"></span>
-                  Parsing PDF...
+                  Loading...
                 </>
               ) : (
                 <>
                   <FileText size={18} />
-                  Parse & Preview Questions
+                  {file?.name.endsWith('.json') ? 'Review JSON Questions' : 'Parse & Preview Questions'}
                 </>
               )}
             </button>
@@ -505,6 +529,17 @@ const ImportQuestions = () => {
                       </button>
                     </div>
 
+                    <div className="edit-form-group" style={{marginTop: '0.5rem'}}>
+                      <label className="edit-form-label">Explanation</label>
+                      <textarea
+                        className="edit-textarea"
+                        value={editForm.explanation || ''}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, explanation: e.target.value }))}
+                        rows={2}
+                        placeholder="Add explanation or solution step..."
+                      />
+                    </div>
+
                     <div className="edit-image-upload">
                       <label className="edit-form-label">Question Figure (Optional)</label>
                       <div className="image-upload-area">
@@ -557,6 +592,12 @@ const ImportQuestions = () => {
                         </div>
                       ))}
                     </div>
+                    {q.explanation && (
+                      <div className="q-explanation-box">
+                        <div className="explanation-label">Explanation:</div>
+                        <p className="explanation-text">{q.explanation}</p>
+                      </div>
+                    )}
                     {q.correct_option_id === null && (
                       <div className="no-answer-badge">
                         <AlertCircle size={14} />

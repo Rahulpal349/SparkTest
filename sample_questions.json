@@ -1,0 +1,28 @@
+[
+  {
+    "question_text": "A 230V, 50Hz single phase AC supply is connected to a pure resistive load of 10 ohms. What is the RMS current through the load?",
+    "options": [
+      { "id": "a", "text": "23 A" },
+      { "id": "b", "text": "2.3 A" },
+      { "id": "c", "text": "230 A" },
+      { "id": "d", "text": "None of these" }
+    ],
+    "correct_option_id": "a",
+    "explanation": "Current (I) = V / R = 230 / 10 = 23 Amperes.",
+    "subject_tag": "Basic Electrical",
+    "difficulty": "easy"
+  },
+  {
+    "question_text": "Which of the following materials has the highest electrical conductivity?",
+    "options": [
+      { "id": "a", "text": "Gold" },
+      { "id": "b", "text": "Silver" },
+      { "id": "c", "text": "Copper" },
+      { "id": "d", "text": "Aluminum" }
+    ],
+    "correct_option_id": "b",
+    "explanation": "Silver has the highest electrical conductivity among all metals, followed by copper and gold.",
+    "subject_tag": "Materials",
+    "difficulty": "easy"
+  }
+]
