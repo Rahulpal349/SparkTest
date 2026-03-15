@@ -5,7 +5,8 @@ import { useAuth } from '../context/AuthContext';
 
 export default function TestInterfacePage() {
   const [searchParams] = useSearchParams();
-  const testId = searchParams.get('test');
+  const testId = searchParams.get('test') || searchParams.get('testId');
+  const resumeId = searchParams.get('resume');
   const navigate = useNavigate();
   const { user } = useAuth();
   
@@ -36,11 +37,33 @@ export default function TestInterfacePage() {
         setTimeLeft(testData.duration_minutes * 60);
         document.title = `${testData.title} - SparkTest`;
       }
+
+      // If resuming, fetch previous answers
+      if (resumeId) {
+        const { data: subData } = await supabase
+          .from('test_submissions')
+          .select('*')
+          .eq('id', resumeId)
+          .single();
+        
+        if (subData && subData.answers) {
+          setUserAnswers(subData.answers);
+          // Update time left if saved (optional enhancement, for now assuming full time or based on duration)
+        }
+      }
+
       if (questionsData) {
         setQuestions(questionsData);
         // Initialize status
         const initialStatus = {};
-        questionsData.forEach((_, i) => { initialStatus[i] = i === 0 ? 'visited' : 'not-visited'; });
+        questionsData.forEach((q, i) => { 
+          // If resumed and answered, marked as answered
+          if (resumeId && userAnswers[q.id]) {
+            initialStatus[i] = 'answered';
+          } else {
+            initialStatus[i] = i === 0 ? 'visited' : 'not-visited';
+          }
+        });
         setQuestionStatus(initialStatus);
       }
       setLoading(false);
@@ -172,18 +195,24 @@ export default function TestInterfacePage() {
       user_id: user.id,
       test_id: testId,
       score: Math.max(0, score),
-      total_possible_score: questions.length * 2, // Harmonize with +2 marks logic
+      total_possible_score: questions.length * 2,
       time_taken_seconds: (test.duration_minutes * 60) - timeLeft,
-      answers: userAnswers
+      answers: userAnswers,
+      finished_at: new Date().toISOString() // Mark as finished
     };
 
-    const { data, error } = await supabase.from('test_submissions').insert(submission).select().single();
+    let result;
+    if (resumeId) {
+      result = await supabase.from('test_submissions').update(submission).eq('id', resumeId).select().single();
+    } else {
+      result = await supabase.from('test_submissions').insert(submission).select().single();
+    }
 
-    if (error) {
-      console.error('Submission error:', error);
+    if (result.error) {
+      console.error('Submission error:', result.error);
       alert('Failed to submit test. Please try again.');
     } else {
-      navigate(`/score-report?submission=${data.id}`);
+      navigate(`/score-report?submission=${result.data.id}`);
     }
   };
 

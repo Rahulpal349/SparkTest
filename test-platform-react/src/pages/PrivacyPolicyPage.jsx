@@ -9,94 +9,92 @@ export default function PrivacyPolicyPage() {
   }, []);
 
   return (
-    <div className="legal-page">
+    <div className="legal-page-wrapper">
       <Header />
-      <main className="legal-main section-padding">
-        <div className="container narrow-container">
-          <h1 className="legal-title">Privacy Policy – SparkTest</h1>
-          <p className="legal-updated">Last Updated: 15 March 2026</p>
+      
+      <section className="legal-hero">
+        <div className="container">
+          <span className="legal-badge">Legal Documentation</span>
+          <h1 className="legal-title">Privacy Policy</h1>
+          <p className="legal-updated">
+            Last updated: October 24, 2023. We are committed to protecting your personal information and your right to privacy.
+          </p>
+        </div>
+      </section>
 
-          <section className="legal-section">
-            <p>Welcome to SparkTest, operated by SpeakTest, located in Bankura, West Bengal, India. Your privacy is important to us. This Privacy Policy explains how we collect, use, and protect your information when you use our website and services.</p>
-          </section>
+      <main className="legal-container">
+        <p className="legal-intro">
+          When you visit our website and use our services, you trust us with your personal information. We take your privacy very seriously. In this privacy notice, we seek to explain to you in the clearest way possible what information we collect, how we use it and what rights you have in relation to it.
+        </p>
 
-          <section className="legal-section">
-            <h2>1. Information We Collect</h2>
-            <p>When you use SparkTest, we may collect the following information:</p>
-            <h3>Personal Information</h3>
-            <ul>
-              <li>Name</li>
-              <li>Email address</li>
-              <li>Mobile number</li>
-              <li>Account login details</li>
-            </ul>
-            <h3>Usage Information</h3>
-            <ul>
-              <li>Mock test performance and results</li>
-              <li>Time spent on tests</li>
-              <li>Device information</li>
-              <li>Browser type and IP address</li>
-            </ul>
-            <h3>Cookies</h3>
-            <p>We may use cookies to improve user experience, analyze traffic, and personalize content.</p>
-          </section>
+        <div className="legal-section-list">
+          <div className="legal-item">
+            <div className="legal-number">1</div>
+            <div className="legal-item-content">
+              <h3>Information We Collect</h3>
+              <p>
+                We collect personal information that you voluntarily provide to us when registering at the Service Expressing an interest in obtaining information about us or our products and services, when participating in activities on the Service or otherwise contacting us.
+              </p>
+            </div>
+          </div>
 
-          <section className="legal-section">
-            <h2>2. How We Use Your Information</h2>
-            <p>We use your information to:</p>
-            <ul>
-              <li>Provide mock tests and educational services</li>
-              <li>Improve our platform and user experience</li>
-              <li>Track test performance and rankings</li>
-              <li>Communicate updates or important notifications</li>
-              <li>Prevent fraud and ensure platform security</li>
-            </ul>
-          </section>
+          <div className="legal-item">
+            <div className="legal-number">2</div>
+            <div className="legal-item-content">
+              <h3>How We Use Your Information</h3>
+              <p>
+                We use personal information collected via our Service for a variety of business purposes described below. We process your personal information for these purposes in reliance on our legitimate business interests, in order to enter into or perform a contract with you, with your consent, and/or for compliance with our legal obligations.
+              </p>
+            </div>
+          </div>
 
-          <section className="legal-section">
-            <h2>3. Data Protection</h2>
-            <p>We take reasonable technical and organizational measures to protect your personal data from unauthorized access, misuse, or disclosure. However, no method of internet transmission is 100% secure.</p>
-          </section>
+          <div className="legal-item">
+            <div className="legal-number">3</div>
+            <div className="legal-item-content">
+              <h3>Data Security</h3>
+              <p>
+                We have implemented appropriate technical and organizational security measures designed to protect the security of any personal information we process. However, please also remember that we cannot guarantee that the internet itself is 100% secure.
+              </p>
+            </div>
+          </div>
 
-          <section className="legal-section">
-            <h2>4. Sharing of Information</h2>
-            <p>We do not sell or rent your personal information. We may share information only:</p>
-            <ul>
-              <li>When required by law</li>
-              <li>To protect our legal rights</li>
-              <li>With trusted service providers helping us operate the platform</li>
-            </ul>
-          </section>
+          <div className="legal-item">
+            <div className="legal-number">4</div>
+            <div className="legal-item-content">
+              <h3>Cookies and Tracking</h3>
+              <p>
+                We may use cookies and similar tracking technologies (like web beacons and pixels) to access or store information. Specific information about how we use such technologies and how you can refuse certain cookies is set out in our Cookie Policy.
+              </p>
+            </div>
+          </div>
 
-          <section className="legal-section">
-            <h2>5. Third-Party Services</h2>
-            <p>Our platform may use third-party tools such as authentication providers, analytics services, and payment gateways. These services have their own privacy policies.</p>
-          </section>
+          <div className="legal-item">
+            <div className="legal-number">5</div>
+            <div className="legal-item-content">
+              <h3>Changes to the Policy</h3>
+              <p>
+                We may update this privacy notice from time to time. The updated version will be indicated by an updated "Revised" date and the updated version will be effective as soon as it is accessible.
+              </p>
+            </div>
+          </div>
+        </div>
 
-          <section className="legal-section">
-            <h2>6. Children's Information</h2>
-            <p>SparkTest is intended for students preparing for competitive exams. We do not knowingly collect data from children under 13 without parental consent.</p>
-          </section>
-
-          <section className="legal-section">
-            <h2>7. Your Rights</h2>
-            <p>You have the right to request access to, correction of, or deletion of your data. Contact us regarding privacy concerns.</p>
-          </section>
-
-          <section className="legal-section">
-            <h2>8. Changes to This Policy</h2>
-            <p>We may update this Privacy Policy occasionally. Updated policies will be posted on this page.</p>
-          </section>
-
-          <section className="legal-section">
-            <h2>9. Contact Us</h2>
-            <p>If you have questions regarding this Privacy Policy, contact us:</p>
-            <p>Email: <a href="mailto:sparktestbyrahul@gmail.com">sparktestbyrahul@gmail.com</a></p>
-            <p>Phone: 8670464890</p>
-            <p>Address: Bankura, West Bengal, India</p>
-          </section>
+        <div className="legal-cta-card">
+          <div className="legal-cta-header">
+            <div className="legal-cta-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+            </div>
+            <h2>Questions about your privacy?</h2>
+          </div>
+          <p>
+            If you have questions or comments about this notice, you may email us at sparktestbyrahul@gmail.com or by post to our office in West Bengal.
+          </p>
+          <button className="btn btn-primary btn-large">Contact Privacy Team</button>
         </div>
       </main>
+
       <Footer />
     </div>
   );

@@ -14,15 +14,14 @@ export default function Header() {
           <li><Link to="/exams">Test Series</Link></li>
           <li><Link to="/mock-tests">Live Test</Link></li>
           <li><Link to="/about">About</Link></li>
-          <li><Link to="#">Practice</Link></li>
         </ul>
         <div className="nav-right">
           {user ? (
             <Link to="/exams" className="btn btn-primary">Go to Dashboard →</Link>
           ) : (
             <>
-              <Link to="/login" className="btn btn-secondary">Log in</Link>
-              <Link to="/signup" className="btn btn-primary">Get Started →</Link>
+              <Link to="/login" className="login-link">Sign in</Link>
+              <Link to="/signup" className="btn btn-primary">Get Started</Link>
             </>
           )}
         </div>

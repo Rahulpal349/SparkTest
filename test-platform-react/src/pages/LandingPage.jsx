@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { useAuth } from '../context/AuthContext';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 export default function LandingPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -12,38 +14,7 @@ export default function LandingPage() {
   return (
     <>
       {/* Header */}
-      <header className="glass fixed-top">
-        <nav className="container nav-bar">
-          <Link to="/" className="logo-link-wrapper">
-            <div className="logo">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="logo-svg">
-                <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="#22C55E" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <span className="logo-text"><span className="text-black">Spark</span><span className="text-primary">Test</span></span>
-            </div>
-          </Link>
-          <ul className="nav-links">
-            <li><Link to="/exams">Test Series</Link></li>
-            <li><Link to="/mock-tests">Live Test</Link></li>
-            <li><Link to="/about">About</Link></li>
-          </ul>
-          <div className="nav-actions">
-            {user ? (
-              <button 
-                onClick={() => navigate('/exams')} 
-                className="btn btn-primary"
-              >
-                Go to Dashboard
-              </button>
-            ) : (
-              <>
-                <Link to="/login" className="login-link">Log In</Link>
-                <Link to="/signup" className="btn btn-primary">Sign Up</Link>
-              </>
-            )}
-          </div>
-        </nav>
-      </header>
+      <Header />
 
       <main>
         {/* Hero Section */}
@@ -127,47 +98,7 @@ export default function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="footer-section section-padding">
-        <div className="container footer-grid">
-          <div className="footer-brand">
-            <Link to="/" className="logo-link-wrapper">
-              <div className="logo">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="logo-svg grayscale">
-                  <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="#22C55E" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                <span className="logo-text"><span className="text-black">Spark</span><span className="text-primary">Test</span></span>
-              </div>
-            </Link>
-            <p className="footer-desc">
-              The most trusted platform for electrical engineering students to crack government exams with confidence and precision.
-            </p>
-          </div>
-          <div className="footer-links">
-            <h4>QUICK LINKS</h4>
-            <ul>
-              <li><Link to="/">Home</Link></li>
-              <li><Link to="/exams">Test Series</Link></li>
-              <li><Link to="/about">About</Link></li>
-            </ul>
-          </div>
-          <div className="footer-newsletter">
-            <h4>NEWSLETTER</h4>
-            <p>Get weekly exam alerts and core concept notes.</p>
-            <form className="newsletter-form" onSubmit={(e) => e.preventDefault()}>
-              <input type="email" placeholder="Your email" required />
-              <button type="submit" className="btn btn-primary">Subscribe</button>
-            </form>
-          </div>
-        </div>
-        <div className="container footer-bottom">
-          <p>© 2026 SparkTest. All rights reserved.</p>
-          <div className="legal-links">
-            <Link to="/privacy-policy">Privacy Policy</Link>
-            <Link to="/terms-of-service">Terms of Service</Link>
-            <Link to="/contact-us">Contact Us</Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </>
   );
 }

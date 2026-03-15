@@ -13,10 +13,12 @@ import SignupPage from './pages/SignupPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import PerformancePage from './pages/PerformancePage';
-import AboutPage from './pages/AboutPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsOfServicePage from './pages/TermsOfServicePage';
 import ContactUsPage from './pages/ContactUsPage';
+import AboutPage from './pages/AboutPage';
+import CookiePolicyPage from './pages/CookiePolicyPage';
+
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -43,6 +45,7 @@ function App() {
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+        <Route path="/cookie-policy" element={<CookiePolicyPage />} />
         <Route path="/contact-us" element={<ContactUsPage />} />
       </Routes>
     </Router>

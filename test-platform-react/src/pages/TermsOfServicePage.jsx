@@ -9,79 +9,94 @@ export default function TermsOfServicePage() {
   }, []);
 
   return (
-    <div className="legal-page">
+    <div className="legal-page-wrapper">
       <Header />
-      <main className="legal-main section-padding">
-        <div className="container narrow-container">
-          <h1 className="legal-title">Terms of Service – SparkTest</h1>
-          <p className="legal-updated">Last Updated: 15 March 2026</p>
+      
+      <section className="legal-hero">
+        <div className="container">
+          <span className="legal-badge">Legal Documentation</span>
+          <h1 className="legal-title">Terms of Service</h1>
+          <p className="legal-updated">
+            Last updated: October 24, 2023. Please review these terms carefully as they govern your use of the SparkTest platform.
+          </p>
+        </div>
+      </section>
 
-          <section className="legal-section">
-            <p>Welcome to SparkTest, operated by SpeakTest. By accessing or using our platform, you agree to the following terms. If you do not agree with these terms, please do not use the platform.</p>
-          </section>
+      <main className="legal-container">
+        <p className="legal-intro">
+          Welcome to SparkTest. By accessing our platform, website, or services, you agree to comply with and be bound by the following terms and conditions. These terms apply to all visitors, users, and others who access or use the Service.
+        </p>
 
-          <section className="legal-section">
-            <h2>1. Acceptance of Terms</h2>
-            <p>By using SparkTest, you agree to comply with these Terms of Service and all applicable laws.</p>
-          </section>
+        <div className="legal-section-list">
+          <div className="legal-item">
+            <div className="legal-number">1</div>
+            <div className="legal-item-content">
+              <h3>Acceptance of Terms</h3>
+              <p>
+                By creating an account, subscribing to our services, or simply browsing the SparkTest platform, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service and our Privacy Policy. If you are entering into these terms on behalf of an academic institution or company, you represent that you have the authority to bind such entity.
+              </p>
+            </div>
+          </div>
 
-          <section className="legal-section">
-            <h2>2. Services Provided</h2>
-            <p>SparkTest provides online mock tests, exam preparation tools, and performance analytics. These services are intended for educational purposes only.</p>
-          </section>
+          <div className="legal-item">
+            <div className="legal-number">2</div>
+            <div className="legal-item-content">
+              <h3>User Accounts</h3>
+              <p>
+                When you create an account with us, you must provide information that is accurate, complete, and current at all times. Failure to do so constitutes a breach of the Terms, which may result in immediate termination of your account on our Service. You are responsible for safeguarding the password that you use to access the Service.
+              </p>
+            </div>
+          </div>
 
-          <section className="legal-section">
-            <h2>3. User Accounts</h2>
-            <p>Users may need to create an account to access certain features. You agree to:</p>
-            <ul>
-              <li>Provide accurate information</li>
-              <li>Keep login credentials secure</li>
-              <li>Not share your account with others</li>
-            </ul>
-            <p>We reserve the right to suspend accounts involved in misuse.</p>
-          </section>
+          <div className="legal-item">
+            <div className="legal-number">3</div>
+            <div className="legal-item-content">
+              <h3>Intellectual Property</h3>
+              <p>
+                The Service and its original content (excluding Content provided by users), features, and functionality are and will remain the exclusive property of SparkTest and its licensors. Our intellectual property may not be used in connection with any product or service without the prior written consent of SparkTest.
+              </p>
+            </div>
+          </div>
 
-          <section className="legal-section">
-            <h2>4. Prohibited Activities</h2>
-            <p>Users must not:</p>
-            <ul>
-              <li>Copy or distribute test content without permission</li>
-              <li>Attempt to hack or disrupt the platform</li>
-              <li>Use automated bots or scraping tools</li>
-              <li>Upload harmful or illegal content</li>
-            </ul>
-            <p>Violation may result in account suspension.</p>
-          </section>
+          <div className="legal-item">
+            <div className="legal-number">4</div>
+            <div className="legal-item-content">
+              <h3>Limitations of Liability</h3>
+              <p>
+                In no event shall SparkTest, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses.
+              </p>
+            </div>
+          </div>
 
-          <section className="legal-section">
-            <h2>5. Intellectual Property</h2>
-            <p>All content on SparkTest including questions, test structure, design, and software is the intellectual property of SpeakTest and may not be copied without permission.</p>
-          </section>
+          <div className="legal-item">
+            <div className="legal-number">5</div>
+            <div className="legal-item-content">
+              <h3>Termination</h3>
+              <p>
+                We may terminate or suspend your account immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms. Upon termination, your right to use the Service will immediately cease.
+              </p>
+            </div>
+          </div>
+        </div>
 
-          <section className="legal-section">
-            <h2>6. Service Availability</h2>
-            <p>We try to maintain uninterrupted service but cannot guarantee that the platform will always be available or error-free.</p>
-          </section>
-
-          <section className="legal-section">
-            <h2>7. Limitation of Liability</h2>
-            <p>SparkTest is not responsible for exam results, technical issues outside our control, or loss caused by platform downtime.</p>
-          </section>
-
-          <section className="legal-section">
-            <h2>8. Changes to Terms</h2>
-            <p>We may modify these Terms at any time. Continued use of the platform means you accept updated terms.</p>
-          </section>
-
-          <section className="legal-section">
-            <h2>9. Contact Information</h2>
-            <p>Company Name: SpeakTest</p>
-            <p>Email: <a href="mailto:sparktestbyrahul@gmail.com">sparktestbyrahul@gmail.com</a></p>
-            <p>Phone: 8670464890</p>
-            <p>Address: Bankura, West Bengal, India</p>
-          </section>
+        <div className="legal-cta-card">
+          <div className="legal-cta-header">
+            <div className="legal-cta-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+            </div>
+            <h2>Questions about our terms?</h2>
+          </div>
+          <p>
+            Our legal team is here to help you understand how our platform works. If you have any concerns regarding these terms, please contact us.
+          </p>
+          <button className="btn btn-primary btn-large">Contact Legal Support</button>
         </div>
       </main>
+
       <Footer />
     </div>
   );

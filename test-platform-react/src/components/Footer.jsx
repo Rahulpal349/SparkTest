@@ -3,19 +3,37 @@ import { Link } from 'react-router-dom';
 
 export default function Footer() {
   return (
-    <footer className="footer">
-      <div className="container footer-bottom" style={{ border: 'none', paddingTop: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="#9CA3AF" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          <span style={{ color: '#9CA3AF', fontWeight: 700 }}>SparkTest</span>
+    <footer className="footer-redesign">
+      <div className="container">
+        <div className="footer-redesign-grid">
+          <div className="footer-logo-section">
+            <div className="logo logo-link-wrapper">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="logo-svg">
+                <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="#22C55E" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span className="logo-text"><span className="text-black">Spark</span><span className="text-primary">Test</span></span>
+            </div>
+            <p>The most trusted platform for electrical engineering students to crack government exams with confidence.</p>
+          </div>
+          <div className="footer-col">
+            <h4>PLATFORM</h4>
+            <ul>
+              <li><Link to="/exams">Test Series</Link></li>
+              <li><Link to="/mock-tests">Live Test</Link></li>
+              <li><Link to="/performance">Performance</Link></li>
+            </ul>
+          </div>
+          <div className="footer-col">
+            <h4>LEGAL</h4>
+            <ul>
+              <li><Link to="/terms-of-service">Terms of Service</Link></li>
+              <li><Link to="/privacy-policy">Privacy Policy</Link></li>
+              <li><Link to="/cookie-policy">Cookie Policy</Link></li>
+            </ul>
+          </div>
         </div>
-        <p style={{ fontSize: '0.85rem', color: '#9CA3AF' }}>© 2026 SparkTest. All rights reserved.</p>
-        <div className="legal-links">
-          <Link to="/privacy-policy">Privacy Policy</Link>
-          <Link to="/terms-of-service">Terms of Service</Link>
-          <Link to="/contact-us">Contact Us</Link>
+        <div className="footer-copyright">
+          <p>© 2024 SparkTest. All rights reserved.</p>
         </div>
       </div>
     </footer>
