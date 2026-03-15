@@ -17,7 +17,17 @@ export async function extractTextFromPDF(file) {
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
     const textContent = await page.getTextContent();
-    const pageText = textContent.items.map(item => item.str).join(' ');
+    
+    // Sort items by vertical position top-to-bottom, then horizontal left-to-right
+    // This is much more robust for complex PDF layouts
+    const items = textContent.items.sort((a, b) => {
+      if (Math.abs(a.transform[5] - b.transform[5]) < 5) { // Same line (5px threshold)
+        return a.transform[4] - b.transform[4];
+      }
+      return b.transform[5] - a.transform[5]; // Higher Y is higher on page
+    });
+
+    const pageText = items.map(item => item.str).join(' ');
     fullText += pageText + '\n';
   }
 
@@ -42,19 +52,22 @@ export function extractSubject(text) {
  * @returns {Array} - Array of parsed question objects.
  */
 export function parseQuestions(rawText) {
-  const questions = [];
+  let questions = [];
 
-  // Normalize whitespace but preserve newlines
+  // Normalize whitespace
   let text = rawText.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
 
-  // Split by question numbers Q.1, Q.2, Q 1, Q 2, etc.
-  const questionBlocks = text.split(/(?=Q[\.\s]*\d+[\.\s])/i);
+  // Strategy 1: Split by structured Q.N or "Question [No]" prefixes
+  // We DO NOT split by "Question ID" anymore as it often appears at the end of a block
+  const splitRegex = /(?=(?:Q(?:uestion)?(?:\.|\s|No[\.\s:]+)*)\s*\d+(?:[\.\s:]+|$))/i;
+  let questionBlocks = text.split(splitRegex);
+  
   let currentSection = null;
 
   for (const block of questionBlocks) {
     if (!block.trim()) continue;
 
-    // Check if this block contains a new section header
+    // Check for section header
     const sectionMatch = block.match(/Section\s*:\s*([^~\n\r]+)/i);
     if (sectionMatch) {
       currentSection = sectionMatch[1].trim();
@@ -63,12 +76,26 @@ export function parseQuestions(rawText) {
     try {
       const parsed = parseSingleQuestion(block);
       if (parsed) {
-        // Assign the current section to the question
         parsed.section = currentSection;
         questions.push(parsed);
       }
     } catch (e) {
-      console.warn('Failed to parse question block:', block.substring(0, 100), e);
+      console.warn('Failed to parse question block:', block.substring(0, 50), e);
+    }
+  }
+
+  // Strategy 2: If Strategy 1 found NO questions or poor answer detection, try the alternative system.
+  const questionsWithAnswers = questions.filter(q => q.correct_option_id !== null).length;
+  
+  if (questions.length === 0 || questionsWithAnswers < questions.length * 0.1) { 
+    console.log('Strategy 1 found ' + questions.length + ' questions. Trying Strategy 2...');
+    const altQuestions = parseQuestionsAlternative(rawText);
+    const altWithAnswers = altQuestions.filter(q => q.correct_option_id !== null).length;
+    
+    // Choose whichever strategy found more questions/answers
+    if (altQuestions.length > questions.length || altWithAnswers > questionsWithAnswers) {
+      console.log('Strategy 2 detected more questions/answers. Using Strategy 2.');
+      return altQuestions;
     }
   }
 
@@ -79,15 +106,24 @@ export function parseQuestions(rawText) {
  * Parse a single question block.
  */
 function parseSingleQuestion(block) {
-  // Remove the Q.N prefix
-  const qNumMatch = block.match(/^Q[\.\s]*(\d+)[\.\s]*/i);
+  // Supports patterns like Q.1, Q 1, Question 1, Question No: 1
+  // ALSO handles numeric-only starts like "1. Question text" if they are at the start of a block
+  let qNumMatch = block.match(/(?:^|\n|\r|\s)?(?:Q(?:uestion)?(?:\.|\s|No[\.\s:]+)*)\s*(\d+)[\.\s:]+/i);
+  
+  if (!qNumMatch) {
+    // Try just numeric start
+    qNumMatch = block.match(/(?:^|\n|\r|\s)?(\d+)[\.\)]\s+/);
+  }
+
+  if (!qNumMatch) {
+    qNumMatch = block.match(/Question\s*ID\s*[:\-]\s*(\d+)/i);
+  }
+
   if (!qNumMatch) return null;
 
   const questionNumber = parseInt(qNumMatch[1]);
-  let content = block.slice(qNumMatch[0].length).trim();
+  let content = block.slice(block.indexOf(qNumMatch[0]) + qNumMatch[0].length).trim();
 
-  // Find the answer/options section
-  // Look for "Ans" marker or the start of numbered options
   let questionText = '';
   let optionsText = '';
 
@@ -96,8 +132,8 @@ function parseSingleQuestion(block) {
     questionText = content.slice(0, ansMatch.index).trim();
     optionsText = content.slice(ansMatch.index + ansMatch[0].length).trim();
   } else {
-    // Try to split at first numbered option
-    const firstOptMatch = content.match(/(?:^|\s)(?:[\u2717\u2713\u2714\u2715\u2716\u2718✗✓✔✕✖✘×]?\s*)?1[\.\)]\s/);
+    // Try to split at first numbered option (1. or 1))
+    const firstOptMatch = content.match(/(?:^|\s)(?:[\u2713-\u2718✓✔✗✘✕✖❌❎]|\btick\b|\bcross\b)?\s*1[\.\)]\s*/i);
     if (firstOptMatch) {
       questionText = content.slice(0, firstOptMatch.index).trim();
       optionsText = content.slice(firstOptMatch.index).trim();
@@ -108,81 +144,80 @@ function parseSingleQuestion(block) {
 
   if (!questionText || !optionsText) return null;
 
-  // Parse options - look for 1. 2. 3. 4. patterns
-  const options = [];
   let correctOptionId = null;
 
-  // Split options by numbered pattern, but accommodate symbols and varied spacing
-  // Supports patterns like: 1. Opt, 1) Opt, ✔ 1. Opt, ✗1.Opt, etc.
-  const optionParts = optionsText.split(/(?=(?:[\u2713-\u2718\u2705\u2611✓✔✗✘✕✖\u274C\u274E❌❎]|\btick\b|\bcross\b)?\s*[1-4][\.\)]\s*)/i);
+  // Split options by numbered pattern - make symbols and numbers optional/flexible
+  // Increased robustness of the split regex
+  const optionParts = optionsText.split(/(?=(?:[\u2713-\u2718\u2705\u2611✓✔✗✘✕✖\u274C\u274E❌❎]|\btick\b|\bcross\b)?\s*[1-4][\.\)])/i);
 
   for (const part of optionParts) {
-    if (!part.trim()) continue;
+    const trimmedPart = part.trim();
+    if (!trimmedPart) continue;
 
-    // Check for correct answer marker (tick/check) or wrong marker (cross)
-    // Common markers: Unicode 2713, 2714, 2705, 2611, tick, etc.
     const symbolRegex = /[\u2713-\u2714✓✔\u2705\u2611]|\btick\b/i;
-    const isCorrect = symbolRegex.test(part) || part.includes('✔');
+    const isCorrect = symbolRegex.test(trimmedPart) || trimmedPart.includes('✔') || trimmedPart.includes('✓');
     
     const wrongRegex = /[\u2715-\u2718✗✘✕✖\u274C\u274E❌❎]|\bcross\b/i;
-    const isWrong = wrongRegex.test(part) || part.includes('✗');
+    const isWrong = wrongRegex.test(trimmedPart) || trimmedPart.includes('✗');
 
     // Extract option number and text
-    const optMatch = part.match(/[\u2717\u2713\u2714\u2715\u2716\u2718✗✓✔✕✖✘×]?\s*([1-4])[\.\)]\s*(.*)/s);
+    const optMatch = trimmedPart.match(/(?:.*?)?([1-4])[\.\)]\s*(.*)/s);
     if (optMatch) {
       const optId = parseInt(optMatch[1]);
       let optText = optMatch[2].trim();
 
-      // Clean up the option text - remove trailing markers and noise
-      optText = optText.replace(/[\u2717\u2713\u2714\u2715\u2716\u2718✗✓✔✕✖✘×]/g, '').trim();
-      // Remove trailing "Que" or "Chosen" text that appears in some Adda247 PDFs
+      // Clean up the option text
+      optText = optText.replace(/[\u2713-\u2718\u2705\u2611✓✔✗✘✕✖\u274C\u274E❌❎]/g, '').trim();
       optText = optText.replace(/\s*(Que|Chosen|Question|Ques).*$/i, '').trim();
 
       if (optText) {
         options.push({ id: optId, text: optText });
-        if (isCorrect) {
-          correctOptionId = optId;
-        }
+        if (isCorrect) correctOptionId = optId;
       }
     }
   }
 
-  // If we couldn't find check marks, try alternative patterns
+  // If we couldn't find symbols, search for explicit metadata in the WHOLE block
   if (correctOptionId === null && options.length > 0) {
-    // 1. Look for explicit metadata patterns (usually found in response sheets)
-    // Avoid matching "Ans 1." which is just a label for the first option.
-    // We look for patterns like "Correct Answer : 2" or "Answer : 3" that ARE NOT followed by a dot/bracket
     const metadataMatch = block.match(/(?:Correct Answer|Correct Option|Answer)\s*[:\-]?\s*([1-4])(?!\s*[\.\)])/i);
     if (metadataMatch) {
       correctOptionId = parseInt(metadataMatch[1]);
     }
 
-    // 2. Look for "Ans : 2" (common shorthand)
     const ansShorthandMatch = block.match(/\bAns\s*[:\-]\s*([1-4])(?!\s*[\.\)])/i);
-      if (ansShorthandMatch) {
+    if (ansShorthandMatch) {
       correctOptionId = parseInt(ansShorthandMatch[1]);
     }
 
-    // 3. Fallback: Look for "Chosen Option : [1-4]" 
-    // Sometimes response sheets don't have symbols in text, but have this metadata
     const chosenMatch = block.match(/Chosen Option\s*[:\-]?\s*([1-4])/i);
     if (!correctOptionId && chosenMatch) {
       const val = parseInt(chosenMatch[1]);
       if (!isNaN(val)) correctOptionId = val;
     }
+
+    // 4. Smart Metadata: Look for "Correct Option ID : [number]" and match it with option list
+    const correctIdMatch = block.match(/(?:Correct|Ans|Answer)\s*(?:Option|Opt)?\s*ID\s*[:\-]\s*(\d+)/i);
+    if (!correctOptionId && correctIdMatch) {
+      const targetId = correctIdMatch[1];
+      // Try to find which option [1-4] corresponds to this ID by searching the block
+      for (let i = 1; i <= 4; i++) {
+        const optIdRegex = new RegExp(`Option\\s*${i}\\s*ID\\s*[:\\-]?\\s*${targetId}`, 'i');
+        if (optIdRegex.test(block)) {
+          correctOptionId = i;
+          break;
+        }
+      }
+    }
   }
 
-  // Auto-Correction logic: If only one option is NOT marked with a cross ✗, it's the correct one
-  // Be more permissive with what defines an option part to ensure we catch them all
+  // Auto-Correction: Process of elimination
   if (correctOptionId === null && options.length === 4) {
-    const partsWithWrongSymbol = optionParts.filter(p => /[\u2715-\u2718✗✘✕✖\u274C\u274E❌❎]|\bcross\b/i.test(p)).length;
+    const wrongRegex = /[\u2715-\u2718✗✘✕✖\u274C\u274E❌❎]|\bcross\b/i;
+    const partsWithWrongSymbol = optionParts.filter(p => wrongRegex.test(p)).length;
     if (partsWithWrongSymbol === 3) {
-      // Find the one without any wrong symbol
-      const winnerPart = optionParts.find(p => p.match(/[1-4][\.\)]/) && !/[\u2715-\u2718✗✘✕✖\u274C\u274E❌❎]|\bcross\b/i.test(p));
+      const winnerPart = optionParts.find(p => p.match(/[1-4][\.\)]/) && !wrongRegex.test(p));
       const winnerMatch = winnerPart?.match(/([1-4])[\.\)]/);
-      if (winnerMatch) {
-        correctOptionId = parseInt(winnerMatch[1]);
-      }
+      if (winnerMatch) correctOptionId = parseInt(winnerMatch[1]);
     }
   }
 
@@ -203,66 +238,28 @@ function parseSingleQuestion(block) {
  */
 export function parseQuestionsAlternative(rawText) {
   const questions = [];
-  const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
+  // Normalize then split by anything that looks like a question number start at a newline
+  const text = rawText.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const blocks = text.split(/(?=(?:^|\n|\r)(?:Q(?:uestion)?[\.\s:]+)?\d+[\.\)]\s)/i);
   
-  let i = 0;
-  while (i < lines.length) {
-    const qMatch = lines[i].match(/^Q[\.\s]*(\d+)[\.\s]+(.*)/i);
-    if (!qMatch) { i++; continue; }
+  let currentSection = null;
 
-    let questionText = qMatch[2].trim();
-    i++;
-
-    // Collect question text until we hit "Ans" or option pattern
-    while (i < lines.length && !/^Ans\b/i.test(lines[i]) && !/^[1-4][\.\)]\s/.test(lines[i])) {
-      // Check if next line starts with a sub-part like a), b), c)
-      questionText += ' ' + lines[i];
-      i++;
+  for (const block of blocks) {
+    if (!block.trim()) continue;
+    
+    // Check for section header in this block
+    const sectionMatch = block.match(/Section\s*:\s*([^~\n\r]+)/i);
+    if (sectionMatch) {
+      currentSection = sectionMatch[1].trim();
     }
 
-    // Skip "Ans" line if present
-    if (i < lines.length && /^Ans\b/i.test(lines[i])) {
-      i++;
-    }
-
-    // Collect options
-    const options = [];
-    let correctId = null;
-
-    while (i < lines.length && options.length < 4) {
-      const line = lines[i];
-      const corrMatch = line.match(/^[\u2713\u2714✓✔]\s*([1-4])[\.\)]\s*(.*)/);
-      const wrongMatch = line.match(/^[\u2717\u2715\u2716\u2718✗✕✖✘×]\s*([1-4])[\.\)]\s*(.*)/);
-      const plainMatch = line.match(/^([1-4])[\.\)]\s*(.*)/);
-
-      if (corrMatch) {
-        const id = parseInt(corrMatch[1]);
-        options.push({ id, text: corrMatch[2].trim() });
-        correctId = id;
-      } else if (wrongMatch) {
-        const id = parseInt(wrongMatch[1]);
-        options.push({ id, text: wrongMatch[2].trim() });
-      } else if (plainMatch) {
-        const id = parseInt(plainMatch[1]);
-        options.push({ id, text: plainMatch[2].trim() });
-      } else if (options.length > 0) {
-        // Continuation of previous option text
-        options[options.length - 1].text += ' ' + line;
-      } else {
-        break; // Not an option line
-      }
-      i++;
-    }
-
-    if (options.length >= 2) {
-      questions.push({
-        number: parseInt(qMatch[1]),
-        question_text: questionText.trim(),
-        options,
-        correct_option_id: correctId,
-      });
+    // Try to parse this block
+    const parsed = parseSingleQuestion(block);
+    if (parsed) {
+      parsed.section = currentSection;
+      questions.push(parsed);
     }
   }
-
+  
   return questions;
 }

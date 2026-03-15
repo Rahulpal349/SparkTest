@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Edit2, Trash2, X, ChevronLeft, ChevronRight, Filter } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, X, ChevronLeft, ChevronRight, Filter, Image as ImageIcon } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import './Questions.css';
 
@@ -144,8 +144,15 @@ const Questions = () => {
                   <tr key={q.id}>
                     <td className="id-cell">Q-{q.id.toString().slice(-4)}</td>
                     <td className="content-cell">
-                      <div className="question-text-truncate">
-                        {q.question_text}
+                      <div className="question-content-wrapper">
+                        {q.image_url && (
+                          <div className="q-table-image-thumb">
+                            <ImageIcon size={14} className="text-primary" />
+                          </div>
+                        )}
+                        <div className="question-text-truncate">
+                          {q.question_text}
+                        </div>
                       </div>
                     </td>
                     <td>
