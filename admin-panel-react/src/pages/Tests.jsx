@@ -5,9 +5,11 @@ import './Tests.css';
 
 const Tests = () => {
   const [tests, setTests] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateFlow, setShowCreateFlow] = useState(false);
   const [step, setStep] = useState(1);
+  const [editingTestId, setEditingTestId] = useState(null);
 
   // Test config state
   const [testTitle, setTestTitle] = useState('');
@@ -41,7 +43,21 @@ const Tests = () => {
 
   useEffect(() => {
     fetchTests();
+    fetchCategories();
   }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('test_categories')
+        .select('*')
+        .order('name');
+      if (error) throw error;
+      setCategories(data || []);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
 
   const fetchTests = async () => {
     setLoading(true);
@@ -56,6 +72,70 @@ const Tests = () => {
       console.error('Error fetching tests:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleEditTest = async (test) => {
+    setLoading(true);
+    try {
+      // 1. Set basic config
+      setTestTitle(test.title || '');
+      setTestCategory(test.category_id || '');
+      setTestDuration(test.duration_minutes || 60);
+      setTestIdCustom(test.test_id_custom || '');
+      setExamType(test.exam_type || '');
+      setTestSubject(test.subject || '');
+      setMarksPerQuestion(test.marks_per_question || 1);
+      setHasNegativeMarking(test.has_negative_marking || false);
+      setNegativeMarkValue(test.negative_mark_value || 0.25);
+      setEditingTestId(test.id);
+
+      // 2. Fetch questions
+      const { data, error } = await supabase
+        .from('questions')
+        .select('*')
+        .eq('test_id', test.id)
+        .order('id', { ascending: true });
+
+      if (error) throw error;
+      setAddedQuestions(data || []);
+      setShowCreateFlow(true);
+    } catch (err) {
+      console.error('Error loading test for edit:', err);
+      alert('Failed to load test data.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteTest = async (testId, testTitle) => {
+    if (!window.confirm(`Are you sure you want to delete "${testTitle}"? This will also remove its questions from this test.`)) return;
+
+    try {
+      // Questions are linked by test_id. We should decide if we delete them or just unlink them.
+      // Usually, if they were created specifically for this test, they should be deleted.
+      // If we want to be safe, we can just unlink them (set test_id to null).
+      // But the user probably expects the test to be gone.
+      
+      const { error: qError } = await supabase
+        .from('questions')
+        .update({ test_id: null })
+        .eq('test_id', testId);
+      
+      if (qError) throw qError;
+
+      const { error } = await supabase
+        .from('tests')
+        .delete()
+        .eq('id', testId);
+
+      if (error) throw error;
+      
+      fetchTests();
+      alert('Test deleted successfully.');
+    } catch (err) {
+      console.error('Delete error:', err);
+      alert('Failed to delete test.');
     }
   };
 
@@ -127,36 +207,62 @@ const Tests = () => {
     if (addedQuestions.length === 0) { alert('Please add at least one question.'); return; }
 
     setSaving(true);
+    let activeTestId = editingTestId;
+
     try {
-      // 1. Create the test
-      const { data: testData, error: testError } = await supabase
-        .from('tests')
-        .insert({
-          title: testTitle,
-          duration_minutes: testDuration,
-          total_questions: addedQuestions.length,
-          total_marks: addedQuestions.length * marksPerQuestion,
-          test_id_custom: testIdCustom,
-          exam_type: examType,
-          subject: testSubject,
-          marks_per_question: marksPerQuestion,
-          has_negative_marking: hasNegativeMarking,
-          negative_mark_value: hasNegativeMarking ? negativeMarkValue : 0,
-        })
-        .select()
-        .single();
+      if (editingTestId) {
+        // Update existing test metadata
+        const { error: testError } = await supabase
+          .from('tests')
+          .update({
+            title: testTitle,
+            category_id: testCategory,
+            duration_minutes: testDuration,
+            total_questions: addedQuestions.length,
+            total_marks: addedQuestions.length * marksPerQuestion,
+            test_id_custom: testIdCustom,
+            exam_type: examType,
+            subject: testSubject,
+            marks_per_question: marksPerQuestion,
+            has_negative_marking: hasNegativeMarking,
+            negative_mark_value: hasNegativeMarking ? negativeMarkValue : 0,
+          })
+          .eq('id', editingTestId);
 
-      if (testError) throw testError;
+        if (testError) throw testError;
+      } else {
+        // Create new test
+        const { data: testData, error: testError } = await supabase
+          .from('tests')
+          .insert({
+            title: testTitle,
+            category_id: testCategory,
+            duration_minutes: testDuration,
+            total_questions: addedQuestions.length,
+            total_marks: addedQuestions.length * marksPerQuestion,
+            test_id_custom: testIdCustom,
+            exam_type: examType,
+            subject: testSubject,
+            marks_per_question: marksPerQuestion,
+            has_negative_marking: hasNegativeMarking,
+            negative_mark_value: hasNegativeMarking ? negativeMarkValue : 0,
+          })
+          .select()
+          .single();
 
-      // 2. Insert new questions (ones created inline) and link existing ones
+        if (testError) throw testError;
+        activeTestId = testData.id;
+      }
+
+      // 2. Handle Questions
       const questionsToInsert = [];
-      const existingQuestionUpdates = [];
+      const existingQuestionIdsToLink = [];
 
       for (const q of addedQuestions) {
         if (q._temp) {
-          // New question — insert with test_id
+          // New question created specifically for this test
           questionsToInsert.push({
-            test_id: testData.id,
+            test_id: activeTestId,
             question_text: q.question_text,
             options: q.options,
             correct_option_id: q.correct_option_id,
@@ -164,26 +270,46 @@ const Tests = () => {
             category: q.category,
           });
         } else {
-          // Existing question — update test_id
-          existingQuestionUpdates.push(q.id);
+          // Existing question from bank - link by test_id
+          existingQuestionIdsToLink.push(q.id);
         }
       }
 
+      // Insert new questions
       if (questionsToInsert.length > 0) {
-        const { error } = await supabase.from('questions').insert(questionsToInsert);
-        if (error) throw error;
+        const { error: insError } = await supabase.from('questions').insert(questionsToInsert);
+        if (insError) throw insError;
       }
 
-      if (existingQuestionUpdates.length > 0) {
-        const { error } = await supabase
+      // Link existing questions
+      if (existingQuestionIdsToLink.length > 0) {
+        const { error: linkError } = await supabase
           .from('questions')
-          .update({ test_id: testData.id })
-          .in('id', existingQuestionUpdates);
-        if (error) throw error;
+          .update({ test_id: activeTestId })
+          .in('id', existingQuestionIdsToLink);
+        if (linkError) throw linkError;
       }
 
-      alert(`Test "${testTitle}" created with ${addedQuestions.length} questions!`);
+      // 3. Unlink questions that were removed (if editing)
+      if (editingTestId) {
+        const currentlyKeptIds = addedQuestions.filter(q => !q._temp).map(q => q.id);
+        
+        // We only unlink questions that were previously part of this test but are not in the 'kept' list
+        // Note: new questions already have the test_id, and they wouldn't be in the 'old' list anyway.
+        const { error: unlinkError } = await supabase
+          .from('questions')
+          .update({ test_id: null })
+          .eq('test_id', activeTestId)
+          .not('id', 'in', `(${currentlyKeptIds.length > 0 ? currentlyKeptIds.join(',') : '00000000-0000-0000-0000-000000000000'})`);
+        
+        if (unlinkError) throw unlinkError;
+      }
+
+      alert(editingTestId ? `Test "${testTitle}" updated successfully!` : `Test "${testTitle}" created successfully!`);
+      
+      // Reset State
       setShowCreateFlow(false);
+      setEditingTestId(null);
       setAddedQuestions([]);
       setTestTitle('');
       setTestCategory('');
@@ -195,6 +321,7 @@ const Tests = () => {
       setHasNegativeMarking(false);
       setNegativeMarkValue(0.25);
       fetchTests();
+
     } catch (err) {
       console.error('Save error:', err);
       alert('Failed to save test: ' + err.message);
@@ -208,13 +335,13 @@ const Tests = () => {
     return (
       <div className="test-create-flow fade-in">
         <div className="breadcrumb">
-          <span className="breadcrumb-path" onClick={() => setShowCreateFlow(false)}>Tests</span>
+          <span className="breadcrumb-path" onClick={() => { setShowCreateFlow(false); setEditingTestId(null); setAddedQuestions([]); }}>Tests</span>
           <ChevronRight size={14} />
-          <span className="breadcrumb-current">New Test</span>
+          <span className="breadcrumb-current">{editingTestId ? 'Edit Test' : 'New Test'}</span>
         </div>
 
         <div className="page-header">
-          <h1 className="page-title">Create New Test</h1>
+          <h1 className="page-title">{editingTestId ? 'Edit Test' : 'Create New Test'}</h1>
         </div>
 
         {/* Test Config */}
@@ -234,6 +361,19 @@ const Tests = () => {
             <div className="form-group">
               <label className="form-label">Test Name</label>
               <input type="text" className="form-input" placeholder="e.g. SSC JE Electrical Mock 1" value={testTitle} onChange={e => setTestTitle(e.target.value)} />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Exam Category</label>
+              <select 
+                className="form-input" 
+                value={testCategory} 
+                onChange={e => setTestCategory(e.target.value)}
+              >
+                <option value="">Select Category</option>
+                {categories.map(cat => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </select>
             </div>
             <div className="form-group">
               <label className="form-label">Exam Type</label>
@@ -384,9 +524,9 @@ const Tests = () => {
         </div>
 
         <div className="flow-footer">
-          <button className="btn btn-secondary" onClick={() => setShowCreateFlow(false)}>Cancel</button>
+          <button className="btn btn-secondary" onClick={() => { setShowCreateFlow(false); setEditingTestId(null); setAddedQuestions([]); }}>Cancel</button>
           <button className="btn btn-primary" onClick={handleSaveTest} disabled={saving}>
-            {saving ? 'Saving...' : `Save Test (${addedQuestions.length} Q)`}
+            {saving ? 'Saving...' : editingTestId ? 'Update Test' : `Save Test (${addedQuestions.length} Q)`}
           </button>
         </div>
 
@@ -453,7 +593,7 @@ const Tests = () => {
           <h1 className="page-title">Tests Management</h1>
           <p className="page-desc">Create, edit, and organize your mock tests and exams.</p>
         </div>
-        <button className="btn btn-primary" onClick={() => setShowCreateFlow(true)}>
+        <button className="btn btn-primary" onClick={() => { setShowCreateFlow(true); setEditingTestId(null); }}>
           <Plus size={18} />
           <span>Create New Test</span>
         </button>
@@ -470,7 +610,9 @@ const Tests = () => {
                   <Book size={20} />
                 </div>
                 <div className="test-meta">
-                  <span className="test-category">{test.category || 'General'}</span>
+                  <span className="test-category">
+                    {categories.find(c => c.id === test.category_id)?.name || 'Uncategorized'}
+                  </span>
                   <h3>{test.title}</h3>
                 </div>
               </div>
@@ -485,8 +627,11 @@ const Tests = () => {
                 </div>
               </div>
               <div className="test-card-footer">
-                <button className="btn btn-secondary btn-sm">Edit</button>
-                <button className="btn btn-primary btn-sm">Manage</button>
+                <button className="btn btn-secondary btn-sm" onClick={() => handleEditTest(test)}>Edit</button>
+                <button className="btn btn-primary btn-sm" onClick={() => handleEditTest(test)}>Manage</button>
+                <button className="btn btn-action-danger btn-sm" onClick={() => handleDeleteTest(test.id, test.title)} title="Delete Test">
+                  <Trash2 size={16} />
+                </button>
               </div>
             </div>
           ))

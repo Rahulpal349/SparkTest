@@ -19,6 +19,7 @@ export default function TestInterfacePage() {
   const [userAnswers, setUserAnswers] = useState({}); // { questionId: optionId }
   const [questionStatus, setQuestionStatus] = useState({}); // { index: 'answered' | 'unanswered' | 'marked' | 'visited' }
   const [showModal, setShowModal] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const timerRef = useRef(null);
 
   const fullName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
@@ -49,7 +50,7 @@ export default function TestInterfacePage() {
   }, [testId]);
 
   useEffect(() => {
-    if (timeLeft > 0 && !loading) {
+    if (timeLeft > 0 && !loading && !isPaused) {
       timerRef.current = setInterval(() => {
         setTimeLeft(prev => {
           if (prev <= 1) {
@@ -60,9 +61,11 @@ export default function TestInterfacePage() {
           return prev - 1;
         });
       }, 1000);
+    } else {
+      clearInterval(timerRef.current);
     }
     return () => clearInterval(timerRef.current);
-  }, [timeLeft, loading]);
+  }, [timeLeft, loading, isPaused]);
 
   const formatTime = (s) => {
     const h = String(Math.floor(s / 3600)).padStart(2, '0');
@@ -94,9 +97,13 @@ export default function TestInterfacePage() {
   };
 
   const handleMarkForReview = () => {
-    setQuestionStatus(prev => ({ ...prev, [currentIndex]: 'marked' }));
+    setQuestionStatus(prev => ({ ...prev, [currentIndex]: 'review' }));
     if (currentIndex < questions.length - 1) {
-      setCurrentIndex(currentIndex + 1);
+      const nextIndex = currentIndex + 1;
+      setCurrentIndex(nextIndex);
+      if (questionStatus[nextIndex] === 'not-visited') {
+        setQuestionStatus(prev => ({ ...prev, [nextIndex]: 'visited' }));
+      }
     }
   };
 
@@ -104,6 +111,8 @@ export default function TestInterfacePage() {
     const newAnswers = { ...userAnswers };
     delete newAnswers[currentQuestion.id];
     setUserAnswers(newAnswers);
+    // If it was answered, set it back to unanswered/visited
+    setQuestionStatus(prev => ({ ...prev, [currentIndex]: 'unanswered' }));
   };
 
   const handleFinalSubmit = async () => {
@@ -137,11 +146,11 @@ export default function TestInterfacePage() {
   };
 
   const getStatusCounts = () => {
-    const counts = { answered: 0, unanswered: 0, marked: 0, notVisited: 0 };
+    const counts = { answered: 0, unanswered: 0, review: 0, notVisited: 0 };
     Object.values(questionStatus).forEach(s => {
       if (s === 'answered') counts.answered++;
-      else if (s === 'marked') counts.marked++;
-      else if (s === 'visited' || s === 'unanswered') counts.unanswered++;
+      else if (s === 'review') counts.review++;
+      else if (s === 'unanswered' || s === 'visited') counts.unanswered++;
       else counts.notVisited++;
     });
     return counts;
@@ -182,7 +191,7 @@ export default function TestInterfacePage() {
           </div>
         </div>
         <div className="ti-header-right">
-          <button className="ti-action-btn">
+          <button className="ti-action-btn" onClick={() => setIsPaused(true)}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg> Pause
           </button>
           <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=DCFCE7&color=22C55E`} alt="User" className="ti-avatar" />
@@ -253,7 +262,7 @@ export default function TestInterfacePage() {
             <div className="ti-stat-box answered"><span className="ti-stat-value">{counts.answered}</span><span className="ti-stat-label">ANSWERED</span></div>
             <div className="ti-stat-box unanswered"><span className="ti-stat-value">{counts.unanswered}</span><span className="ti-stat-label">UNANSWERED</span></div>
             <div className="ti-stat-box not-visited"><span className="ti-stat-value">{counts.notVisited}</span><span className="ti-stat-label">NOT VISITED</span></div>
-            <div className="ti-stat-box review"><span className="ti-stat-value">{counts.marked}</span><span className="ti-stat-label">REVIEW</span></div>
+            <div className="ti-stat-box review"><span className="ti-stat-value">{counts.review}</span><span className="ti-stat-label">REVIEW</span></div>
           </div>
 
           <div className="ti-palette-section">
@@ -311,7 +320,7 @@ export default function TestInterfacePage() {
                     <td>{questions.length}</td>
                     <td>{counts.answered}</td>
                     <td>{counts.unanswered}</td>
-                    <td>{counts.marked}</td>
+                    <td>{counts.review}</td>
                     <td>{counts.notVisited}</td>
                   </tr>
                 </tbody>
@@ -321,6 +330,20 @@ export default function TestInterfacePage() {
               <button className="ts-tests-btn" onClick={() => setShowModal(false)}>Resume Test</button>
               <button onClick={handleFinalSubmit} className="ts-resume-btn" style={{ background: '#22C55E', color: 'white', border: 'none', padding: '0.75rem 1.5rem', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>Submit &amp; View Results &nbsp;▶</button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Pause Overlay */}
+      {isPaused && (
+        <div className="ti-pause-overlay">
+          <div className="ti-pause-modal">
+            <div className="ti-pause-icon">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+            </div>
+            <h2 className="ti-pause-title">Test Paused</h2>
+            <p className="ti-pause-text">Your timer has been stopped. Take a break and click <strong>Resume</strong> when you're ready to continue.</p>
+            <button className="ti-btn-save" onClick={() => setIsPaused(false)}>Resume Test</button>
           </div>
         </div>
       )}

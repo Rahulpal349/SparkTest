@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 
@@ -7,6 +7,7 @@ export default function InstructionsPage() {
   const [searchParams] = useSearchParams();
   const testId = searchParams.get('test');
   const { user } = useAuth();
+  const navigate = useNavigate();
   
   const [test, setTest] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -35,6 +36,26 @@ export default function InstructionsPage() {
 
     fetchTest();
   }, [testId]);
+
+  const handleStartTest = () => {
+    if (!consent) return;
+
+    // Trigger full-screen mode
+    const docElm = document.documentElement;
+    if (docElm.requestFullscreen) {
+      docElm.requestFullscreen().catch(err => {
+        console.warn(`Error attempting to enable full-screen mode: ${err.message}`);
+      });
+    } else if (docElm.mozRequestFullScreen) { /* Firefox */
+      docElm.mozRequestFullScreen();
+    } else if (docElm.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+      docElm.webkitRequestFullscreen();
+    } else if (docElm.msRequestFullscreen) { /* IE/Edge */
+      docElm.msRequestFullscreen();
+    }
+
+    navigate(`/test-interface?test=${testId}`);
+  };
 
   if (loading) {
     return (
@@ -199,18 +220,19 @@ export default function InstructionsPage() {
           </label>
         </div>
         <div className="footer-right">
-          <Link 
-            to={consent ? `/test-interface?test=${testId}` : '#'} 
+          <button 
+            onClick={handleStartTest}
+            disabled={!consent}
             className={`btn-primary-large ${!consent ? 'disabled' : ''}`} 
             style={{ 
               textDecoration: 'none',
               opacity: consent ? 1 : 0.5,
               cursor: consent ? 'pointer' : 'not-allowed',
-              pointerEvents: consent ? 'auto' : 'none'
+              fontFamily: 'inherit',
             }}
           >
             I AM READY TO BEGIN &nbsp;▶
-          </Link>
+          </button>
         </div>
       </footer>
     </div>

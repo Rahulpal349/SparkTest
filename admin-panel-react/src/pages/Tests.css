@@ -81,6 +81,26 @@
   flex: 1;
 }
 
+.btn-action-danger {
+  background: #FEF2F2;
+  color: #EF4444;
+  border: 1px solid #FEE2E2;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+
+.btn-action-danger:hover {
+  background: #EF4444;
+  color: white;
+  border-color: #EF4444;
+}
+
 .empty-state-card {
   grid-column: 1 / -1;
   text-align: center;
