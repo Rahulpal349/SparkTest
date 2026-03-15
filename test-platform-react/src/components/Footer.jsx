@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 export default function Footer() {
   return (
@@ -12,9 +13,9 @@ export default function Footer() {
         </div>
         <p style={{ fontSize: '0.85rem', color: '#9CA3AF' }}>© 2026 SparkTest. All rights reserved.</p>
         <div className="legal-links">
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms of Service</a>
-          <a href="#">Help Center</a>
+          <Link to="/privacy-policy">Privacy Policy</Link>
+          <Link to="/terms-of-service">Terms of Service</Link>
+          <Link to="/contact-us">Contact Us</Link>
         </div>
       </div>
     </footer>

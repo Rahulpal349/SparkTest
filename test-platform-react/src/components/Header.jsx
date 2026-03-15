@@ -13,7 +13,7 @@ export default function Header() {
         <ul className="nav-links">
           <li><Link to="/exams">Test Series</Link></li>
           <li><Link to="/mock-tests">Live Test</Link></li>
-          <li><Link to="#">PYQs</Link></li>
+          <li><Link to="/about">About</Link></li>
           <li><Link to="#">Practice</Link></li>
         </ul>
         <div className="nav-right">

@@ -25,7 +25,7 @@ export default function LandingPage() {
           <ul className="nav-links">
             <li><Link to="/exams">Test Series</Link></li>
             <li><Link to="/mock-tests">Live Test</Link></li>
-            <li><Link to="#">About</Link></li>
+            <li><Link to="/about">About</Link></li>
           </ul>
           <div className="nav-actions">
             {user ? (
@@ -51,7 +51,7 @@ export default function LandingPage() {
           <div className="container hero-grid">
             <div className="hero-content centered">
               <div className="badge">
-                <span className="dot"></span> NEW: SSC JE 2024 SERIES LIVE
+                <span className="dot"></span> NEW: SSC JE 2026 SERIES LIVE
               </div>
               <h1>Power Up Your Preparation for <span className="text-primary">Govt. EE Exams</span></h1>
               <p className="hero-description">
@@ -147,7 +147,7 @@ export default function LandingPage() {
             <ul>
               <li><Link to="/">Home</Link></li>
               <li><Link to="/exams">Test Series</Link></li>
-              <li><a href="#">About</a></li>
+              <li><Link to="/about">About</Link></li>
             </ul>
           </div>
           <div className="footer-newsletter">
@@ -162,9 +162,9 @@ export default function LandingPage() {
         <div className="container footer-bottom">
           <p>© 2026 SparkTest. All rights reserved.</p>
           <div className="legal-links">
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
-            <a href="#">Contact Us</a>
+            <Link to="/privacy-policy">Privacy Policy</Link>
+            <Link to="/terms-of-service">Terms of Service</Link>
+            <Link to="/contact-us">Contact Us</Link>
           </div>
         </div>
       </footer>

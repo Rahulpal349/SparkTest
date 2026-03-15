@@ -78,10 +78,11 @@ export default function ScoreReportPage() {
     let attempted = 0;
     
     questions.forEach(q => {
-      const userAns = submission?.answers[q.id];
-      if (userAns) {
+      const userAns = submission?.answers?.[q.id];
+      if (userAns !== undefined && userAns !== null) {
         attempted++;
-        if (userAns === q.correct_option_id) correct++;
+        // Use String coercion to handle type mismatches (number vs string IDs)
+        if (String(userAns) === String(q.correct_option_id)) correct++;
         else incorrect++;
       }
     });

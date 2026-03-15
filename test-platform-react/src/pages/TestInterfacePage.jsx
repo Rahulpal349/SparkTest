@@ -66,6 +66,44 @@ export default function TestInterfacePage() {
     }
     return () => clearInterval(timerRef.current);
   }, [timeLeft, loading, isPaused]);
+  
+  // Security & Scroll Lock
+  useEffect(() => {
+    // Lock global scroll
+    document.documentElement.classList.add('test-active');
+    document.body.classList.add('test-active');
+    
+    // Disable right-click
+    const handleContextMenu = (e) => e.preventDefault();
+    document.addEventListener('contextmenu', handleContextMenu);
+    
+    // Disable copy
+    const handleCopy = (e) => e.preventDefault();
+    document.addEventListener('copy', handleCopy);
+    
+    // Disable keyboard shortcuts
+    const handleKeyDown = (e) => {
+      // F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+C, Ctrl+V, Ctrl+S
+      if (
+        e.keyCode === 123 || // F12
+        (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || // Ctrl+Shift+I/J
+        (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83 || e.keyCode === 67 || e.keyCode === 86)) // Ctrl+U/S/C/V
+      ) {
+        e.preventDefault();
+        return false;
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    
+    return () => {
+      // Cleanup
+      document.documentElement.classList.remove('test-active');
+      document.body.classList.remove('test-active');
+      document.removeEventListener('contextmenu', handleContextMenu);
+      document.removeEventListener('copy', handleCopy);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   const formatTime = (s) => {
     const h = String(Math.floor(s / 3600)).padStart(2, '0');
@@ -119,10 +157,14 @@ export default function TestInterfacePage() {
     // Calculate Score (Simple frontend calculation for now, better to do on backend/trigger)
     let score = 0;
     questions.forEach(q => {
-      if (userAnswers[q.id] === q.correct_option_id) {
-        score += 2; // Assuming 2 marks for correct
-      } else if (userAnswers[q.id]) {
-        score -= 0.5; // Assuming 0.5 negative
+      const userAns = userAnswers[q.id];
+      if (userAns !== undefined && userAns !== null) {
+        // Use String coercion to handle type mismatches (number vs string IDs)
+        if (String(userAns) === String(q.correct_option_id)) {
+          score += 2; // Assuming 2 marks for correct
+        } else {
+          score -= 0.5; // Assuming 0.5 negative
+        }
       }
     });
 
@@ -130,7 +172,7 @@ export default function TestInterfacePage() {
       user_id: user.id,
       test_id: testId,
       score: Math.max(0, score),
-      total_possible_score: test.total_marks,
+      total_possible_score: questions.length * 2, // Harmonize with +2 marks logic
       time_taken_seconds: (test.duration_minutes * 60) - timeLeft,
       answers: userAnswers
     };

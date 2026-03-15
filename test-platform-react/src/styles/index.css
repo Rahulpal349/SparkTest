@@ -2141,6 +2141,16 @@ h3 {
     font-family: 'Inter', sans-serif;
     margin: 0;
     padding: 0;
+    user-select: none; /* Disable text selection/copying */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+/* Ensure global scroll is disabled when in test */
+html.test-active, body.test-active {
+    overflow: hidden !important;
+    height: 100% !important;
 }
 
 /* Header */
@@ -2261,6 +2271,7 @@ h3 {
     display: grid;
     grid-template-columns: 1fr 320px;
     min-height: calc(100vh - 56px);
+    align-items: flex-start; /* Prevent sidebar from stretching to full height */
 }
 
 /* Question Area */
@@ -2457,6 +2468,10 @@ h3 {
     border-left: 1px solid #E5E7EB;
     display: flex;
     flex-direction: column;
+    position: sticky;
+    top: 56px; /* Sticky below the header */
+    max-height: calc(100vh - 56px);
+    overflow-y: auto; /* Allow scrolling sidebar if palette is huge */
 }
 
 .ti-user-card {
